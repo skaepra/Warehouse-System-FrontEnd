@@ -24,7 +24,7 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-zinc-900 transition-colors duration-200 min-h-screen">
+    <div className="bg-[#F3F4F6] dark:bg-zinc-900 transition-colors duration-200 min-h-screen">
       {/* 2. Wishlist Products Section */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-14 pt-20">
         {/* Section Title */}
@@ -35,7 +35,7 @@ export default function WishlistPage() {
           viewport={{ once: true }}
           className="flex flex-col items-center mb-10 text-center space-y-2"
         >
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1F2937] dark:text-white">
             Favorite Products ({wishlist.length})
           </h2>
         </motion.div>

@@ -41,7 +41,7 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white/90 text-xs font-medium border border-white/20"
           >
-            <IoSparkles className="text-amber-400" />
+            <IoSparkles className="text-amber-400 " />
             <span>New Collection Available</span>
           </motion.div>
 

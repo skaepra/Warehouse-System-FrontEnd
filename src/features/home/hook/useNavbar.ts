@@ -9,8 +9,8 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { name: "Home", link: "/" },
-  { name: "Shop", link: "/shop" },
-  { name: "Order", link: "/order" },
+  { name: "Shop", link: "/createEmployee" },
+  { name: "Order", link: "/employeeList" },
   { name: "Favorite", link: "/wishlist" },
 ];
 

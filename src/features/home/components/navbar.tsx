@@ -37,7 +37,7 @@ export default function AppNavbar() {
           isVisible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        <div className="bg-slate-900/85 dark:bg-zinc-900/85 backdrop-blur-md border-b border-white/10 dark:border-zinc-800 text-white shadow-lg">
+        <div className="bg-[#1E293B] dark:bg-zinc-900/85 backdrop-blur-md border-b border-white/10 dark:border-zinc-800 text-white shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             {/* Left Section: Logo & Desktop Links */}
             <div className="flex items-center gap-8">
@@ -115,7 +115,7 @@ export default function AppNavbar() {
               {/* Subscribe Button */}
               <NavLink
                 to="/login"
-                className="hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-indigo-500 hover:shadow-indigo-500/40 dark:bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-medium text-xs shadow-md shadow-purple-500/20 transition-all dark:hover:shadow-purple-500/40 active:scale-95"
+                className="hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-xl  bg-[#D97706] dark:bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-medium text-xs  shadow-purple-500/20 transition-all dark:hover:shadow-purple-500/40 active:scale-95"
               >
                 <IoSparklesOutline />
                 <span>Subscribe</span>

@@ -6,7 +6,7 @@ import Home from "./features/home/screen/home";
 import ShoppingCartScreen from "./features/cart/screen/ShoppingCart";
 import LoginScreen from "./features/auth/Screens/login";
 
-import SignUpScreen from "./features/auth/Screens/SignUp";
+import SignUpScreen from "./features/auth/Screens/CreateEmployee";
 
 import Footer from "./features/home/components/Footer";
 import FAQPage from "./features/customer-care/FAQ";
@@ -21,14 +21,16 @@ import CheckOutScreen from "./features/checkout/screen/CheckOut";
 
 import AppNavbar from "./features/home/components/navbar";
 import NotFoundPage from "./features/error/NotFound";
+import CreateEmployeeScreen from "./features/auth/Screens/CreateEmployee";
+import EmployeeListScreen from "./features/employee.ts/screens/EmployeeList";
 
 
 export default function Layout(): React.JSX.Element {
   const location = useLocation();
 
   // تحديد النوع كـ مصفوفة نصوص ثابتة للقراءة فقط لضمان الحماية والأداء
-  const hideNavbarRoutes: readonly string[] = ["/login", "/singUp"];
-  const hideFooterRoutes: readonly string[] = ["/login", "/singUp"];
+  const hideNavbarRoutes: readonly string[] = ["/login", "/createEmployee"];
+  const hideFooterRoutes: readonly string[] = ["/login", "/createEmployee"];
   const shouldHideNavbar: boolean = hideNavbarRoutes.includes(
     location.pathname,
   );
@@ -45,9 +47,9 @@ export default function Layout(): React.JSX.Element {
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/cart" element={<ShoppingCartScreen />} />
           <Route path="/checkOut" element={<CheckOutScreen />} />
-          <Route path="/order" element={<OrdersPage />} />
+          <Route path="/employeeList" element={<EmployeeListScreen />} />
           <Route path="/login" element={<LoginScreen />} />
-          <Route path="/singUp" element={<SignUpScreen />} />
+          <Route path="/createEmployee" element={<CreateEmployeeScreen />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/shipping" element={<ShippingInfoPage />} />
           <Route path="/returns" element={<ReturnsRefundsPage />} />
@@ -57,7 +59,7 @@ export default function Layout(): React.JSX.Element {
         </Routes>
 
         {!shouldHideNavbar && <AppNavbar />}
-        {!shouldHideFooter && <Footer />}
+        {/* {!shouldHideFooter && <Footer />} */}
       </AppThemeProvider>
     </>
   );
