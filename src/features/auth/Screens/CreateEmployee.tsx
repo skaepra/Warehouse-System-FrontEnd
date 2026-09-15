@@ -2,7 +2,6 @@ import { FormEvent, ChangeEvent } from "react";
 import { 
   IoPersonOutline, 
   IoMailOutline, 
-  IoBriefcaseOutline, 
   IoArrowBack,
   IoShieldCheckmarkOutline 
 } from "react-icons/io5";
@@ -30,7 +29,7 @@ export default function CreateEmployeeScreen() {
       <form onSubmit={onSubmit} className={styles.card}>
         {/* العودة للوحة التحكم */}
         <button
-          onClick={()=> navigate("/")}
+          onClick={()=> navigate("/employeeList")}
           className={styles.backLink}
           aria-label="Back to employee list"
         >

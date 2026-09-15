@@ -1,22 +1,28 @@
-// utils/auth.ts
-export const getUserRole = (): string | null => {
+import { jwtDecode } from "jwt-decode";
+
+export interface CustomJwtPayload {
+  nameid?: string;
+  email?: string;
+  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"?: string | string[];
+  role?: string | string[];
+}
+
+export const getUserRoles = (): string[] => {
   const token = localStorage.getItem("token");
-  if (!token) return null;
+  if (!token) return [];
 
   try {
-    // فك شفرة الجزء الثاني من JWT (Payload)
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const payload = JSON.parse(window.atob(base64));
+    const decoded = jwtDecode<CustomJwtPayload>(token);
+    const roles = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || decoded.role;
 
-    // استخراج الـ Role حسب تعريف ASP.NET Core Identity
-    return (
-      payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ||
-      payload["role"] ||
-      null
-    );
-  } catch {
-    return null;
+    if (!roles) return [];
+    return Array.isArray(roles) ? roles : [roles];
+  } catch (error) {
+    return [];
   }
 };
 
+export const hasRole = (allowedRoles: string[]): boolean => {
+  const userRoles = getUserRoles();
+  return userRoles.some((role) => allowedRoles.includes(role));
+};

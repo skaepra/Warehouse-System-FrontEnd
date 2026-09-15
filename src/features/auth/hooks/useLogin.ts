@@ -6,6 +6,7 @@ import { useForm } from "../../../shared/useForm";
 import { loginSchema } from "../schemas/loginSchema";
 import { initialLoginState } from "../constants/initialLoginState";
 import { useNavigate } from "react-router-dom";
+import { getUserRoles } from "../../../shared/utils/auth";
 
 export function useLogin() {
   const form = useForm(initialLoginState, loginSchema);
@@ -32,15 +33,25 @@ export function useLogin() {
       setIsSuccess(true);
       setLoading(false);
 
-      // 🧹 إعادة تعيين قيم النموذج عند نجاح العملية
+      //  إعادة تعيين قيم النموذج عند نجاح العملية
       if (form.reset) {
         form.reset();
       }
-      navigate("/");
+      const roles = getUserRoles();
+
+      if (roles.includes("Manager")) {
+        navigate("/employeeList", { replace: true });
+      } else if (roles.includes("Sales")) {
+        navigate("/productPay", { replace: true });
+      } else if (roles.includes("Storekeeper")) {
+        navigate("/inventory", { replace: true }); // غير المسار حسب صفحة المخزن
+      } else {
+        navigate("/login", { replace: true });
+      }
 
       return result;
     } catch (error: any) {
-      // 💥 التقاط واستخراج خطأ السيرفر التفصيلي
+      //  التقاط واستخراج خطأ السيرفر التفصيلي
       setIsError(true);
 
       const responseData = error?.response?.data;

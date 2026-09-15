@@ -1,5 +1,5 @@
 import { FormEvent, ChangeEvent } from "react";
-import { IoMailOutline, IoArrowBack } from "react-icons/io5";
+import { IoMailOutline } from "react-icons/io5";
 
 import { useLogin } from "../hooks/useLogin";
 import PasswordInput from "../../../shared/components/PasswordInput";
