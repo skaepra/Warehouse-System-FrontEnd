@@ -1,4 +1,4 @@
-import { SignupFormData } from "../../auth/schemas/signupSchema";
+import { SignupFormData } from "../schemas/CreateEmployeeSchema";
 
 export const initialSignupState: SignupFormData = {
   fullName: "",

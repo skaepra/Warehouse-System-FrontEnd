@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CartItem } from "../types/CartItem";
 
+
+
 interface CartState {
   items: CartItem[];
 }
@@ -9,74 +11,60 @@ const initialState: CartState = {
   items: [],
 };
 
-interface Cartinformation {
-  id: string;
-  color: string;
-  size: string;
-}
-
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
+    // إضافة منتج للسلة
     addToCart(state, action: PayloadAction<CartItem>) {
       const existingItem = state.items.find(
-        (item) =>
-          item.id === action.payload.id &&
-          item.color === action.payload.color &&
-          item.size === action.payload.size,
+        (item) => item.productId === action.payload.productId
       );
 
       if (existingItem) {
-        existingItem.quantity += action.payload.quantity;
+        // عدم التجاوز للمخزون المتاح
+        if (existingItem.quantity < existingItem.availableStock) {
+          existingItem.quantity += action.payload.quantity || 1;
+        }
       } else {
         state.items.push(action.payload);
       }
     },
 
-    removeFromCart(
-      state,
-      action: PayloadAction<Cartinformation>,
-    ) {
+    // إزالة منتج بالكامل من السلة بواسطة id المنتج
+    removeFromCart(state, action: PayloadAction<{ productId: string }>) {
       state.items = state.items.filter(
-        (item) =>
-          !(
-            item.id === action.payload.id &&
-            item.color === action.payload.color &&
-            item.size === action.payload.size
-          ),
+        (item) => item.productId !== action.payload.productId
       );
     },
 
+    // تفريغ السلة بالكامل
     clearCart(state) {
       state.items = [];
     },
 
-    increaseQuantity(
-      state,
-      action: PayloadAction<Cartinformation>,
-    ) {
-      state.items = state.items.map((item) =>
-        item.id === action.payload.id &&
-        item.color === action.payload.color &&
-        item.size === action.payload.size
-          ? { ...item, quantity: item.quantity + 1 }
-          : item,
+    // زيادة الكمية بمقدار 1
+    increaseQuantity(state, action: PayloadAction<{ productId: string }>) {
+      const item = state.items.find(
+        (i) => i.productId === action.payload.productId
       );
+      if (item && item.quantity < item.availableStock) {
+        item.quantity += 1;
+      }
     },
 
-    decreaseQuantity(
-      state,
-      action: PayloadAction<Cartinformation>,
-    ) {
-      state.items = state.items.map((item) =>
-        item.id === action.payload.id &&
-        item.color === action.payload.color &&
-        item.size === action.payload.size &&
-        item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item,
+    // إنقاص الكمية بمقدار 1 (وإزالته إذا أصبحت الكمية 0)
+    decreaseQuantity(state, action: PayloadAction<{ productId: string }>) {
+      const index = state.items.findIndex(
+        (i) => i.productId === action.payload.productId
       );
+      if (index !== -1) {
+        if (state.items[index].quantity > 1) {
+          state.items[index].quantity -= 1;
+        } else {
+          state.items.splice(index, 1); // إزالة العنصر عند إنقاصه من 1
+        }
+      }
     },
   },
 });
@@ -88,4 +76,5 @@ export const {
   increaseQuantity,
   decreaseQuantity,
 } = cartSlice.actions;
+
 export default cartSlice.reducer;

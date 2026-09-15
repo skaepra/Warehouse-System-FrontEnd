@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --base=/",
     "server": "json-server --watch db.json --port 3000",
     "build": "vite build",
     "lint": "eslint .",
@@ -21,6 +21,7 @@
     "axios": "^1.18.1",
     "dayjs": "^1.11.13",
     "framer-motion": "^12.23.6",
+    "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "maplibre-gl": "^5.9.0",
     "moment": "^2.30.1",

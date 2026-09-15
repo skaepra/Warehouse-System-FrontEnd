@@ -1,6 +1,22 @@
-import apiClient from "../../../shared/api/api-Client";
+import api from "../../../shared/api/axiosInstance";
+import { LoginPayload } from "../types/LoginPayload";
 
-export const login = async (data: any) => {
-  const res = await apiClient.post('/verifyUser',data);
+// تعريف واجهة الاستجابة المتوقعة من الباك إند
+export interface LoginResponse {
+  message: string;
+  token: string;
+  refreshToken: string;
+  expiration: string;
+}
+
+export const login = async (data: LoginPayload): Promise<LoginResponse> => {
+  const res = await api.post<LoginResponse>("/api/login", data);
+
+  if (res.data?.token) {
+    localStorage.setItem("token", res.data.token);
+  }
+  if (res.data?.refreshToken) {
+    localStorage.setItem("refreshToken", res.data.refreshToken);
+  }
   return res.data;
 };

@@ -23,7 +23,6 @@ export function useForm<T extends Record<string, any>>(
       const formattedErrors: Record<string, string> = {};
       const fieldErrors = result.error.flatten().fieldErrors;
 
-      // 💡 استخدام Object.entries يضمن التعرف الصحيح على الأنواع في TypeScript
       Object.entries(fieldErrors).forEach(([key, messages]) => {
         if (Array.isArray(messages) && messages[0]) {
           formattedErrors[key] = messages[0];
@@ -38,10 +37,17 @@ export function useForm<T extends Record<string, any>>(
     return result.data;
   };
 
+  // 🧹 دالة إعادة التعيين لتصفير القيم والأخطاء
+  const reset = () => {
+    setFormData(initialState);
+    setErrors({});
+  };
+
   return {
     formData,
     errors,
     updateField,
     validate,
+    reset, 
   };
 }

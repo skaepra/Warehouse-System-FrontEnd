@@ -46,7 +46,6 @@ Email: z
         message:
           "Password can contain only uppercase letters, lowercase letters, numbers and !@#$%^&*() symbols",
       }),
-  Remember: z.boolean().default(false),
 });
 
 // استخراج نوع الـ Values من مخطط Zod تلقائياً

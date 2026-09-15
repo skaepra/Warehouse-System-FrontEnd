@@ -5,13 +5,19 @@ import { useThemeMode } from "../../dark-mode/dark";
 export interface NavItem {
   name: string;
   link: string;
+  allowedRoles?: ("Manager" | "Sales" | "Storekeeper")[]; 
 }
 
 export const navItems: NavItem[] = [
-  { name: "Home", link: "/" },
-  { name: "Shop", link: "/shop" },
-  { name: "Order", link: "/order" },
-  { name: "Favorite", link: "/wishlist" },
+  { name: "Product", link: "/productPay" ,allowedRoles: ["Sales"]}, 
+  { name: "Order", link: "/salesOrders" ,allowedRoles: ["Sales"]}, 
+  
+  { name: "Inventory", link: "/inventory", allowedRoles: ["Manager"] },
+  { name: "Employee", link: "/employeeList", allowedRoles: ["Manager"] }, 
+  { name: "Product", link: "/product", allowedRoles: ["Manager"] }, 
+  { name: "Invoice", link: "/invoice", allowedRoles: ["Manager"] }, 
+
+  { name: "Order", link: "/order" ,allowedRoles: ["Storekeeper"]}, 
 ];
 
 export function useNavbar() {

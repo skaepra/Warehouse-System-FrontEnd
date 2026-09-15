@@ -2,62 +2,57 @@ import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AppThemeProvider } from "./features/dark-mode/dark";
 
-import Home from "./features/home/screen/home";
-import ShoppingCartScreen from "./features/cart/screen/ShoppingCart";
 import LoginScreen from "./features/auth/Screens/login";
 
-import SignUpScreen from "./features/auth/Screens/SignUp";
-
-import Footer from "./features/home/components/Footer";
-import FAQPage from "./features/customer-care/FAQ";
-import ShippingInfoPage from "./features/customer-care/ShippingInfo";
-import ReturnsRefundsPage from "./features/customer-care/ReturnsRefundsPage";
-import ContactUsPage from "./features/customer-care/ContactUsPage";
-import ShopingScreen from "./features/shop/screen/Shoping";
-import ProductDetails from "./features/products/screen/ProductDetails";
-import OrdersPage from "./features/order/screen/OrdersPage";
-import WishlistPage from "./features/products/screen/WishlistPage";
-import CheckOutScreen from "./features/checkout/screen/CheckOut";
 
 import AppNavbar from "./features/home/components/navbar";
 import NotFoundPage from "./features/error/NotFound";
-
+import CreateEmployeeScreen from "./features/auth/Screens/CreateEmployee";
+import EmployeeListScreen from "./features/employee.ts/screens/EmployeeList";
+import { ProtectedRoute } from "./ProtectedRoute";
+import { ManagerProductList } from "./features/products/components/ManagerProductList";
+import { SalesOrdersList } from "./features/order/screen/SalesOrdersList";
+import { SalesProductCatalog } from "./features/home/screen/SalesProductCatalog";
+import { RoleBasedRedirect } from "./shared/components/RoleBasedRedirect";
 
 export default function Layout(): React.JSX.Element {
   const location = useLocation();
 
   // تحديد النوع كـ مصفوفة نصوص ثابتة للقراءة فقط لضمان الحماية والأداء
-  const hideNavbarRoutes: readonly string[] = ["/login", "/singUp"];
-  const hideFooterRoutes: readonly string[] = ["/login", "/singUp"];
+  const hideNavbarRoutes: readonly string[] = ["/login", "/createEmployee"];
+  // const hideFooterRoutes: readonly string[] = ["/login", "/createEmployee"];
   const shouldHideNavbar: boolean = hideNavbarRoutes.includes(
     location.pathname,
   );
-  const shouldHideFooter: boolean = hideFooterRoutes.includes(
-    location.pathname,
-  );
+  // const shouldHideFooter: boolean = hideFooterRoutes.includes(
+  //   location.pathname,
+  // );
 
   return (
     <>
       <AppThemeProvider>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<ShopingScreen />} />
-          <Route path="/wishlist" element={<WishlistPage />} />
-          <Route path="/cart" element={<ShoppingCartScreen />} />
-          <Route path="/checkOut" element={<CheckOutScreen />} />
-          <Route path="/order" element={<OrdersPage />} />
-          <Route path="/login" element={<LoginScreen />} />
-          <Route path="/singUp" element={<SignUpScreen />} />
-          <Route path="/faq" element={<FAQPage />} />
-          <Route path="/shipping" element={<ShippingInfoPage />} />
-          <Route path="/returns" element={<ReturnsRefundsPage />} />
-          <Route path="/contact" element={<ContactUsPage />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="*" element={<NotFoundPage/>} />      
+
+          <Route path="/" element={<RoleBasedRedirect />} />
+
+          <Route element={<ProtectedRoute allowedRoles={["Manager"]} />}>
+            <Route path="/employeeList" element={<EmployeeListScreen />} />
+            <Route path="/createEmployee" element={<CreateEmployeeScreen />} />
+            <Route path="/product" element={<ManagerProductList />} />
+          </Route>
+          <Route element={<ProtectedRoute allowedRoles={["Sales"]} />}>
+            <Route path="/productPay" element={<SalesProductCatalog />} />
+            <Route path="/salesOrders" element={<SalesOrdersList />} />
+          </Route>
+           <Route element={<ProtectedRoute allowedRoles={["Storekeeper"]} />}>
+          </Route>
+
+          <Route path="/login" element={<LoginScreen />} />       
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
 
         {!shouldHideNavbar && <AppNavbar />}
-        {!shouldHideFooter && <Footer />}
+        {/* {!shouldHideFooter && <Footer />} */}
       </AppThemeProvider>
     </>
   );

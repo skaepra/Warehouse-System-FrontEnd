@@ -1,11 +1,7 @@
-export type CartItem = {
-  id: string ;
-  name: string;
+export interface CartItem {
+  productId: string;
+  productName: string;
+  unitSellingPrice: number;
   quantity: number;
-  color: string;
-  size: string;
-  price: number; 
-  image: string;
-  title?: string;
-};
-
+  availableStock: number;
+}

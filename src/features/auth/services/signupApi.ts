@@ -1,8 +1,7 @@
-// services/signupApi.ts
-import apiClient from "../../../shared/api/api-Client";
+import api from "../../../shared/api/axiosInstance";
+import { SignupPayload } from "../types/SignupPayload";
 
-export const signup = async (data: any) => {
-  // 💡 التغيير هنا: استخدام /users بدلاً من /User
-  const res = await apiClient.post('/users', data);
+export const signup = async (data: SignupPayload) => {
+  const res = await api.post("/api/createEmployee", data); // المسار الخاص بإنشاء الموظف
   return res.data;
 };
