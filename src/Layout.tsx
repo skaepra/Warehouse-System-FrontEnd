@@ -12,12 +12,14 @@ import EmployeeListScreen from "./features/employee.ts/screens/EmployeeList";
 import { ManagerProductList } from "./features/products/components/ManagerProductList";
 import { SalesOrdersList } from "./features/order/screen/SalesOrdersList";
 import { SalesProductCatalog } from "./features/home/screen/SalesProductCatalog";
-import { RoleBasedRedirect } from "./shared/components/RoleBasedRedirect";
+import { RoleBasedRedirect } from "./Route/RoleBasedRedirect";
 import { CategoryManagement } from "./features/category/CategoryManagement";
 import { StorekeeperOrdersList } from "./features/order/screen/StorekeeperOrdersList";
 import { InvoicesList } from "./features/invoice/InvoicesList";
 import GuestRoute from "./Route/GuestRoute";
 import { ProtectedRoute } from "./Route/ProtectedRoute";
+import {  StorekeeperAudit } from "./features/Audit/StorekeeperAudit";
+import { ManagerAudit } from "./features/Audit/ManagerAudit";
 
 export default function Layout(): React.JSX.Element {
   const location = useLocation();
@@ -49,6 +51,7 @@ export default function Layout(): React.JSX.Element {
             <Route path="/product" element={<ManagerProductList />} />
             <Route path="/category" element={<CategoryManagement />} />
             <Route path="/invoice" element={<InvoicesList />} />
+            <Route path="/managerAudit" element={<ManagerAudit />} />
           </Route>
 
           {/* مسارات المبيعات */}
@@ -59,10 +62,8 @@ export default function Layout(): React.JSX.Element {
 
           {/* مسارات أمين المخزن */}
           <Route element={<ProtectedRoute allowedRoles={["Storekeeper"]} />}>
-            <Route
-              path="/storekeeperOrders"
-              element={<StorekeeperOrdersList />}
-            />
+            <Route path="/storekeeperOrders" element={<StorekeeperOrdersList />} />
+            <Route path="/auditManagement" element={<StorekeeperAudit />} />
           </Route>
 
           {/* مسار تسجيل الدخول - محمي للضيوف فقط */}

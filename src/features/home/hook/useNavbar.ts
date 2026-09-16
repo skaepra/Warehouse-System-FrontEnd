@@ -15,10 +15,11 @@ export const navItems: NavItem[] = [
   { name: "الموظفين", link: "/employeeList", allowedRoles: ["Manager"] }, 
   { name: "المنتجات", link: "/product", allowedRoles: ["Manager"] }, 
   { name: "التصنيفات", link: "/category", allowedRoles: ["Manager"] }, 
-  { name: "عمليات الجرد", link: "/inventory", allowedRoles: ["Manager"] },
+  { name: "عمليات الجرد", link: "/managerAudit", allowedRoles: ["Manager"] },
   { name: "الفواتير", link: "/invoice", allowedRoles: ["Manager"] }, 
 
-  { name: "Order", link: "/storekeeperOrders" ,allowedRoles: ["Storekeeper"]}, 
+  { name: "الطلبات", link: "/storekeeperOrders" ,allowedRoles: ["Storekeeper"]}, 
+  { name: "جرد المنتجات", link: "/StorekeeperAudit" ,allowedRoles: ["Storekeeper"]},
 ];
 
 export function useNavbar() {
