@@ -14,9 +14,12 @@ import {
   IoFunnelOutline,
   IoFolderOutline,
 } from "react-icons/io5";
-import { CreateProductModal } from "./CreateProductModal";
-import { AddStockModal } from "./AddStockModal";
-import { CategoryDto, categoryService } from "../../category/categoryService";
+import { CreateProductModal } from "../components/CreateProductModal";
+import { AddStockModal } from "../components/AddStockModal";
+import {
+  CategoryDto,
+  categoryService,
+} from "../../category/services/categoryService";
 
 type StockFilterType = "ALL" | "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK";
 

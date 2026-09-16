@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   InvoiceResponseDto,
   invoiceService,
-} from "./invoiceService";
+} from "../services/invoiceService";
 import {
   IoSearchOutline,
   IoRefreshOutline,

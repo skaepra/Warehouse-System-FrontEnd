@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { CategoryDto, categoryService } from "./categoryService";
+import { CategoryDto, categoryService } from "../services/categoryService";
 
 
 export const useCategoryManagement = () => {

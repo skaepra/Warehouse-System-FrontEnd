@@ -10,8 +10,12 @@ import {
   IoFilterOutline,
   IoTrashOutline,
 } from "react-icons/io5";
-import { auditService, AuditDto, CreateAuditPayload } from "./AuditApi";
-import { productService } from "../products/services/productService";
+import {
+  auditService,
+  AuditDto,
+  CreateAuditPayload,
+} from "../services/AuditApi";
+import { productService } from "../../products/services/productService";
 
 export const StorekeeperAudit: React.FC = () => {
   const [audits, setAudits] = useState<AuditDto[]>([]);
@@ -242,7 +246,7 @@ export const StorekeeperAudit: React.FC = () => {
                 <option value="">-- اختر المنتج من القائمة --</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name} 
+                    {product.name}
                   </option>
                 ))}
               </select>

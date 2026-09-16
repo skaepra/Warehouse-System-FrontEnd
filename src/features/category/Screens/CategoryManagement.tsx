@@ -11,7 +11,7 @@ import {
   IoClose,
   IoCubeOutline,
 } from "react-icons/io5";
-import { useCategoryManagement } from "./useCategoryManagement";
+import { useCategoryManagement } from "../hooks/useCategoryManagement";
 
 
 export const CategoryManagement: React.FC = () => {

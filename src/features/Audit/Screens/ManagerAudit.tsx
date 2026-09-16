@@ -12,7 +12,7 @@ import {
   IoTrendingDownOutline,
   IoTrendingUpOutline,
 } from "react-icons/io5";
-import { auditService, AuditDto } from "./AuditApi";
+import { auditService, AuditDto } from "../services/AuditApi";
 
 export const ManagerAudit: React.FC = () => {
   const [audits, setAudits] = useState<AuditDto[]>([]);
@@ -37,7 +37,9 @@ export const ManagerAudit: React.FC = () => {
       const data = await auditService.getAllAudits(selectedStatus);
       setAudits(data);
     } catch (err: any) {
-      setError(err?.response?.data?.detail || err.message || "فشل تحميل طلبات الجرد.");
+      setError(
+        err?.response?.data?.detail || err.message || "فشل تحميل طلبات الجرد.",
+      );
     } finally {
       setLoading(false);
     }
@@ -67,14 +69,16 @@ export const ManagerAudit: React.FC = () => {
       setActionLoading(true);
       setActionError(null);
       await auditService.approveAudit(id);
-      
+
       // تحديث الحالة محلياً وإغلاق النافذة
       setAudits((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status: "1" } : item))
+        prev.map((item) => (item.id === id ? { ...item, status: "1" } : item)),
       );
       setSelectedAudit(null);
     } catch (err: any) {
-      setActionError(err?.response?.data?.detail || "فشلت عملية الموافقة على الطلب.");
+      setActionError(
+        err?.response?.data?.detail || "فشلت عملية الموافقة على الطلب.",
+      );
     } finally {
       setActionLoading(false);
     }
@@ -89,7 +93,7 @@ export const ManagerAudit: React.FC = () => {
 
       // تحديث الحالة محلياً وإغلاق النافذة
       setAudits((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status: "2" } : item))
+        prev.map((item) => (item.id === id ? { ...item, status: "2" } : item)),
       );
       setSelectedAudit(null);
     } catch (err: any) {
@@ -109,9 +113,15 @@ export const ManagerAudit: React.FC = () => {
   });
 
   // حساب الإحصائيات (KPIs)
-  const pendingCount = audits.filter((a) => a.status === "0" || a.status === "Pending").length;
-  const approvedCount = audits.filter((a) => a.status === "1" || a.status === "Approved").length;
-  const rejectedCount = audits.filter((a) => a.status === "2" || a.status === "Rejected").length;
+  const pendingCount = audits.filter(
+    (a) => a.status === "0" || a.status === "Pending",
+  ).length;
+  const approvedCount = audits.filter(
+    (a) => a.status === "1" || a.status === "Approved",
+  ).length;
+  const rejectedCount = audits.filter(
+    (a) => a.status === "2" || a.status === "Rejected",
+  ).length;
 
   const renderBadge = (status: string) => {
     switch (status) {
@@ -137,27 +147,39 @@ export const ManagerAudit: React.FC = () => {
           </span>
         );
       default:
-        return <span className="text-xs px-2.5 py-1 bg-slate-100 rounded-full">{status}</span>;
+        return (
+          <span className="text-xs px-2.5 py-1 bg-slate-100 rounded-full">
+            {status}
+          </span>
+        );
     }
   };
 
   return (
-    <div className="p-6 bg-brand-bg min-h-screen text-brand-text dir-rtl mt-12" dir="rtl">
+    <div
+      className="p-6 bg-brand-bg min-h-screen text-brand-text dir-rtl mt-12"
+      dir="rtl"
+    >
       {/* Header */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-brand-text mb-1 flex items-center gap-2">
-            <IoShieldCheckmarkOutline className="text-brand-primary" /> لوحة تدقيق واعتماد الجرد
+            <IoShieldCheckmarkOutline className="text-brand-primary" /> لوحة
+            تدقيق واعتماد الجرد
           </h1>
           <p className="text-brand-subtext text-sm">
-            صلاحيات مدير المستودع لمراجعة الفروقات والموافقة أو الرفض على تسوية المخزون.
+            صلاحيات مدير المستودع لمراجعة الفروقات والموافقة أو الرفض على تسوية
+            المخزون.
           </p>
         </div>
         <button
           onClick={fetchAudits}
           className="flex items-center justify-center gap-2 px-4 py-2 bg-brand-card border border-slate-200 text-brand-text text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
         >
-          <IoRefreshOutline size={18} className={loading ? "animate-spin" : ""} />
+          <IoRefreshOutline
+            size={18}
+            className={loading ? "animate-spin" : ""}
+          />
           تحديث البيانات
         </button>
       </div>
@@ -166,8 +188,12 @@ export const ManagerAudit: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-brand-card p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-brand-subtext mb-1">طلبات معلقة</p>
-            <p className="text-2xl font-extrabold text-amber-600">{pendingCount}</p>
+            <p className="text-xs font-semibold text-brand-subtext mb-1">
+              طلبات معلقة
+            </p>
+            <p className="text-2xl font-extrabold text-amber-600">
+              {pendingCount}
+            </p>
           </div>
           <div className="p-3 rounded-xl bg-amber-50 text-amber-600">
             <IoTimeOutline size={24} />
@@ -176,8 +202,12 @@ export const ManagerAudit: React.FC = () => {
 
         <div className="bg-brand-card p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-brand-subtext mb-1">طلبات معتمدة</p>
-            <p className="text-2xl font-extrabold text-emerald-600">{approvedCount}</p>
+            <p className="text-xs font-semibold text-brand-subtext mb-1">
+              طلبات معتمدة
+            </p>
+            <p className="text-2xl font-extrabold text-emerald-600">
+              {approvedCount}
+            </p>
           </div>
           <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
             <IoCheckmarkCircleOutline size={24} />
@@ -186,8 +216,12 @@ export const ManagerAudit: React.FC = () => {
 
         <div className="bg-brand-card p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-brand-subtext mb-1">طلبات مرفوضة</p>
-            <p className="text-2xl font-extrabold text-rose-600">{rejectedCount}</p>
+            <p className="text-xs font-semibold text-brand-subtext mb-1">
+              طلبات مرفوضة
+            </p>
+            <p className="text-2xl font-extrabold text-rose-600">
+              {rejectedCount}
+            </p>
           </div>
           <div className="p-3 rounded-xl bg-rose-50 text-rose-600">
             <IoCloseCircleOutline size={24} />
@@ -256,36 +290,49 @@ export const ManagerAudit: React.FC = () => {
               <tbody className="divide-y divide-slate-100">
                 {filteredAudits.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-brand-subtext">
+                    <td
+                      colSpan={7}
+                      className="text-center py-8 text-brand-subtext"
+                    >
                       لا توجد سجلات جرد مطابقة.
                     </td>
                   </tr>
                 ) : (
                   filteredAudits.map((item) => {
-                    const isPending = item.status === "0" || item.status === "Pending";
+                    const isPending =
+                      item.status === "0" || item.status === "Pending";
                     return (
-                      <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                      <tr
+                        key={item.id}
+                        className="hover:bg-slate-50/50 transition-colors"
+                      >
                         <td className="p-3.5 font-bold text-brand-text">
                           {item.productName || item.productId}
                           <span className="block text-[10px] font-normal text-brand-subtext">
                             ID: {item.productId}
                           </span>
                         </td>
-                        <td className="p-3.5 font-semibold">{item.systemQuantity}</td>
-                        <td className="p-3.5 font-semibold">{item.physicalQuantity}</td>
+                        <td className="p-3.5 font-semibold">
+                          {item.systemQuantity}
+                        </td>
+                        <td className="p-3.5 font-semibold">
+                          {item.physicalQuantity}
+                        </td>
                         <td className="p-3.5">
                           <span
                             className={`font-extrabold text-xs px-2 py-0.5 rounded-md flex items-center gap-1 w-fit ${
                               item.difference < 0
                                 ? "bg-rose-50 text-rose-600"
                                 : item.difference > 0
-                                ? "bg-emerald-50 text-emerald-600"
-                                : "bg-slate-100 text-brand-subtext"
+                                  ? "bg-emerald-50 text-emerald-600"
+                                  : "bg-slate-100 text-brand-subtext"
                             }`}
                           >
                             {item.difference < 0 && <IoTrendingDownOutline />}
                             {item.difference > 0 && <IoTrendingUpOutline />}
-                            {item.difference > 0 ? `+${item.difference}` : item.difference}
+                            {item.difference > 0
+                              ? `+${item.difference}`
+                              : item.difference}
                           </span>
                         </td>
                         <td className="p-3.5">{renderBadge(item.status)}</td>
@@ -349,19 +396,29 @@ export const ManagerAudit: React.FC = () => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-brand-subtext block">معرف المنتج (ID):</span>
-                  <span className="font-mono text-brand-text">{selectedAudit.productId}</span>
+                  <span className="text-brand-subtext block">
+                    معرف المنتج (ID):
+                  </span>
+                  <span className="font-mono text-brand-text">
+                    {selectedAudit.productId}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-brand-subtext block">أمين المستودع:</span>
+                  <span className="text-brand-subtext block">
+                    أمين المستودع:
+                  </span>
                   <span className="font-semibold text-brand-text">
                     {selectedAudit.storekeeperId || "غير معروف"}
                   </span>
                 </div>
                 <div>
-                  <span className="text-brand-subtext block">تاريخ الإرسال:</span>
+                  <span className="text-brand-subtext block">
+                    تاريخ الإرسال:
+                  </span>
                   <span className="font-semibold text-brand-text">
-                    {new Date(selectedAudit.submittedAt).toLocaleString("ar-EG")}
+                    {new Date(selectedAudit.submittedAt).toLocaleString(
+                      "ar-EG",
+                    )}
                   </span>
                 </div>
               </div>
@@ -369,12 +426,20 @@ export const ManagerAudit: React.FC = () => {
               {/* المقارنة */}
               <div className="grid grid-cols-3 gap-2 text-center pt-2">
                 <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                  <span className="text-[11px] text-brand-subtext block mb-1">الكمية بالمخزون</span>
-                  <span className="text-base font-bold text-brand-text">{selectedAudit.systemQuantity}</span>
+                  <span className="text-[11px] text-brand-subtext block mb-1">
+                    الكمية بالمخزون
+                  </span>
+                  <span className="text-base font-bold text-brand-text">
+                    {selectedAudit.systemQuantity}
+                  </span>
                 </div>
                 <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                  <span className="text-[11px] text-brand-subtext block mb-1">الكمية المرفوعة</span>
-                  <span className="text-base font-bold text-brand-text">{selectedAudit.physicalQuantity}</span>
+                  <span className="text-[11px] text-brand-subtext block mb-1">
+                    الكمية المرفوعة
+                  </span>
+                  <span className="text-base font-bold text-brand-text">
+                    {selectedAudit.physicalQuantity}
+                  </span>
                 </div>
                 <div
                   className={`p-3 border rounded-xl ${
@@ -383,15 +448,21 @@ export const ManagerAudit: React.FC = () => {
                       : "bg-emerald-50 border-emerald-200 text-emerald-700"
                   }`}
                 >
-                  <span className="text-[11px] block mb-1">مقدار العجز / الزيادة</span>
+                  <span className="text-[11px] block mb-1">
+                    مقدار العجز / الزيادة
+                  </span>
                   <span className="text-base font-extrabold">
-                    {selectedAudit.difference > 0 ? `+${selectedAudit.difference}` : selectedAudit.difference}
+                    {selectedAudit.difference > 0
+                      ? `+${selectedAudit.difference}`
+                      : selectedAudit.difference}
                   </span>
                 </div>
               </div>
 
               <div className="flex justify-between items-center pt-2">
-                <span className="text-xs text-brand-subtext">الحالة الحالية:</span>
+                <span className="text-xs text-brand-subtext">
+                  الحالة الحالية:
+                </span>
                 <div>{renderBadge(selectedAudit.status)}</div>
               </div>
             </div>
@@ -406,7 +477,8 @@ export const ManagerAudit: React.FC = () => {
                 إغلاق
               </button>
 
-              {(selectedAudit.status === "0" || selectedAudit.status === "Pending") && (
+              {(selectedAudit.status === "0" ||
+                selectedAudit.status === "Pending") && (
                 <>
                   <button
                     type="button"

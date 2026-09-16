@@ -9,17 +9,18 @@ import NotFoundPage from "./features/error/NotFound";
 import CreateEmployeeScreen from "./features/auth/Screens/CreateEmployee";
 import EmployeeListScreen from "./features/employee.ts/screens/EmployeeList";
 
-import { ManagerProductList } from "./features/products/components/ManagerProductList";
+import { ManagerProductList } from "./features/products/screen/ManagerProductList";
 import { SalesOrdersList } from "./features/order/screen/SalesOrdersList";
 import { SalesProductCatalog } from "./features/home/screen/SalesProductCatalog";
 import { RoleBasedRedirect } from "./Route/RoleBasedRedirect";
-import { CategoryManagement } from "./features/category/CategoryManagement";
+
 import { StorekeeperOrdersList } from "./features/order/screen/StorekeeperOrdersList";
-import { InvoicesList } from "./features/invoice/InvoicesList";
+import { InvoicesList } from "./features/invoice/Screens/InvoicesList";
 import GuestRoute from "./Route/GuestRoute";
 import { ProtectedRoute } from "./Route/ProtectedRoute";
-import {  StorekeeperAudit } from "./features/Audit/StorekeeperAudit";
-import { ManagerAudit } from "./features/Audit/ManagerAudit";
+import { StorekeeperAudit } from "./features/Audit/Screens/StorekeeperAudit";
+import { ManagerAudit } from "./features/Audit/Screens/ManagerAudit";
+import { CategoryManagement } from "./features/category/Screens/CategoryManagement";
 
 export default function Layout(): React.JSX.Element {
   const location = useLocation();
@@ -34,9 +35,6 @@ export default function Layout(): React.JSX.Element {
   const shouldHideNavbar: boolean = hideNavbarRoutes.includes(
     location.pathname,
   );
-  // const shouldHideFooter: boolean = hideFooterRoutes.includes(
-  //   location.pathname,
-  // );
 
   return (
     <>
@@ -62,7 +60,10 @@ export default function Layout(): React.JSX.Element {
 
           {/* مسارات أمين المخزن */}
           <Route element={<ProtectedRoute allowedRoles={["Storekeeper"]} />}>
-            <Route path="/storekeeperOrders" element={<StorekeeperOrdersList />} />
+            <Route
+              path="/storekeeperOrders"
+              element={<StorekeeperOrdersList />}
+            />
             <Route path="/auditManagement" element={<StorekeeperAudit />} />
           </Route>
 
@@ -76,7 +77,6 @@ export default function Layout(): React.JSX.Element {
         </Routes>
 
         {!shouldHideNavbar && <AppNavbar />}
-        {/* {!shouldHideFooter && <Footer />} */}
       </AppThemeProvider>
     </>
   );

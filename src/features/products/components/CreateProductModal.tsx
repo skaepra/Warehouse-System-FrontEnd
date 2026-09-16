@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CreateProductDto, productService } from "../services/productService";
-import { CategoryDto, categoryService } from "../../category/categoryService";
+import { CategoryDto, categoryService } from "../../category/services/categoryService";
 import { IoCloseOutline } from "react-icons/io5";
 
 interface Props {
