@@ -1,6 +1,7 @@
 // ProtectedRoute.tsx
 import { Navigate, Outlet } from "react-router-dom";
-import { hasRole } from "./shared/utils/auth";
+import { hasRole } from "../shared/utils/auth";
+
 
 
 interface Props {

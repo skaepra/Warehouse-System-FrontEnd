@@ -4,12 +4,11 @@ import { AppThemeProvider } from "./features/dark-mode/dark";
 
 import LoginScreen from "./features/auth/Screens/login";
 
-
 import AppNavbar from "./features/home/components/navbar";
 import NotFoundPage from "./features/error/NotFound";
 import CreateEmployeeScreen from "./features/auth/Screens/CreateEmployee";
 import EmployeeListScreen from "./features/employee.ts/screens/EmployeeList";
-import { ProtectedRoute } from "./ProtectedRoute";
+
 import { ManagerProductList } from "./features/products/components/ManagerProductList";
 import { SalesOrdersList } from "./features/order/screen/SalesOrdersList";
 import { SalesProductCatalog } from "./features/home/screen/SalesProductCatalog";
@@ -17,12 +16,18 @@ import { RoleBasedRedirect } from "./shared/components/RoleBasedRedirect";
 import { CategoryManagement } from "./features/category/CategoryManagement";
 import { StorekeeperOrdersList } from "./features/order/screen/StorekeeperOrdersList";
 import { InvoicesList } from "./features/invoice/InvoicesList";
+import GuestRoute from "./Route/GuestRoute";
+import { ProtectedRoute } from "./Route/ProtectedRoute";
 
 export default function Layout(): React.JSX.Element {
   const location = useLocation();
 
   // تحديد النوع كـ مصفوفة نصوص ثابتة للقراءة فقط لضمان الحماية والأداء
-  const hideNavbarRoutes: readonly string[] = ["/login", "/createEmployee"];
+  const hideNavbarRoutes: readonly string[] = [
+    "/login",
+    "/createEmployee",
+    "/*",
+  ];
   // const hideFooterRoutes: readonly string[] = ["/login", "/createEmployee"];
   const shouldHideNavbar: boolean = hideNavbarRoutes.includes(
     location.pathname,
@@ -35,9 +40,9 @@ export default function Layout(): React.JSX.Element {
     <>
       <AppThemeProvider>
         <Routes>
-
           <Route path="/" element={<RoleBasedRedirect />} />
 
+          {/* مسارات المدير */}
           <Route element={<ProtectedRoute allowedRoles={["Manager"]} />}>
             <Route path="/employeeList" element={<EmployeeListScreen />} />
             <Route path="/createEmployee" element={<CreateEmployeeScreen />} />
@@ -45,15 +50,27 @@ export default function Layout(): React.JSX.Element {
             <Route path="/category" element={<CategoryManagement />} />
             <Route path="/invoice" element={<InvoicesList />} />
           </Route>
+
+          {/* مسارات المبيعات */}
           <Route element={<ProtectedRoute allowedRoles={["Sales"]} />}>
             <Route path="/productPay" element={<SalesProductCatalog />} />
             <Route path="/salesOrders" element={<SalesOrdersList />} />
           </Route>
-           <Route element={<ProtectedRoute allowedRoles={["Storekeeper"]} />}>
-           <Route path="/storekeeperOrders" element={<StorekeeperOrdersList />} />
+
+          {/* مسارات أمين المخزن */}
+          <Route element={<ProtectedRoute allowedRoles={["Storekeeper"]} />}>
+            <Route
+              path="/storekeeperOrders"
+              element={<StorekeeperOrdersList />}
+            />
           </Route>
 
-          <Route path="/login" element={<LoginScreen />} />       
+          {/* مسار تسجيل الدخول - محمي للضيوف فقط */}
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<LoginScreen />} />
+          </Route>
+
+          {/* صفحة غير موجود */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
 
