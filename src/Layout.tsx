@@ -14,6 +14,9 @@ import { ManagerProductList } from "./features/products/components/ManagerProduc
 import { SalesOrdersList } from "./features/order/screen/SalesOrdersList";
 import { SalesProductCatalog } from "./features/home/screen/SalesProductCatalog";
 import { RoleBasedRedirect } from "./shared/components/RoleBasedRedirect";
+import { CategoryManagement } from "./features/category/CategoryManagement";
+import { StorekeeperOrdersList } from "./features/order/screen/StorekeeperOrdersList";
+import { InvoicesList } from "./features/invoice/InvoicesList";
 
 export default function Layout(): React.JSX.Element {
   const location = useLocation();
@@ -39,12 +42,15 @@ export default function Layout(): React.JSX.Element {
             <Route path="/employeeList" element={<EmployeeListScreen />} />
             <Route path="/createEmployee" element={<CreateEmployeeScreen />} />
             <Route path="/product" element={<ManagerProductList />} />
+            <Route path="/category" element={<CategoryManagement />} />
+            <Route path="/invoice" element={<InvoicesList />} />
           </Route>
           <Route element={<ProtectedRoute allowedRoles={["Sales"]} />}>
             <Route path="/productPay" element={<SalesProductCatalog />} />
             <Route path="/salesOrders" element={<SalesOrdersList />} />
           </Route>
            <Route element={<ProtectedRoute allowedRoles={["Storekeeper"]} />}>
+           <Route path="/storekeeperOrders" element={<StorekeeperOrdersList />} />
           </Route>
 
           <Route path="/login" element={<LoginScreen />} />       

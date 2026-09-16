@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Product, productService } from "../services/productService";
+
 import {
   IoSearchOutline,
   IoAlertCircleOutline,
@@ -11,21 +12,28 @@ import {
   IoAddOutline,
   IoAddCircleOutline,
   IoFunnelOutline,
+  IoFolderOutline,
 } from "react-icons/io5";
 import { CreateProductModal } from "./CreateProductModal";
 import { AddStockModal } from "./AddStockModal";
+import { CategoryDto, categoryService } from "../../category/categoryService";
 
 type StockFilterType = "ALL" | "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK";
 
 export const ManagerProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<CategoryDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // فلاتر البحث والتصفية
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [stockFilter, setStockFilter] = useState<StockFilterType>("ALL");
+  const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedProductForStock, setSelectedProductForStock] = useState<Product | null>(null);
+  const [selectedProductForStock, setSelectedProductForStock] =
+    useState<Product | null>(null);
   const [isAddStockModalOpen, setIsAddStockModalOpen] = useState(false);
 
   // حالات لتعديل سعر البيع السريع
@@ -33,22 +41,28 @@ export const ManagerProductList: React.FC = () => {
   const [newPrice, setNewPrice] = useState<number>(0);
   const [updating, setUpdating] = useState<boolean>(false);
 
-  // جلب البيانات من الـ Backend
-  const fetchProducts = async () => {
+  // جلب المنتجات والتصنيفات بالتوازي
+  const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await productService.getAllProducts();
-      setProducts(data);
+
+      const [productsData, categoriesData] = await Promise.all([
+        productService.getAllProducts(),
+        categoryService.getAllCategories(),
+      ]);
+
+      setProducts(productsData);
+      setCategories(categoriesData);
     } catch (err: any) {
-      setError(err.response?.data?.message || "حدث خطأ أثناء جلب المنتجات.");
+      setError(err.response?.data?.message || "حدث خطأ أثناء جلب البيانات.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchData();
   }, []);
 
   // حفظ سعر البيع الجديد [PATCH]
@@ -67,28 +81,37 @@ export const ManagerProductList: React.FC = () => {
     }
   };
 
-  // اضافة كمية جديدة للمنتج
+  // إضافة كمية جديدة للمنتج
   const handleOpenAddStock = (product: Product) => {
     setSelectedProductForStock(product);
     setIsAddStockModalOpen(true);
   };
 
-  // منطق تصفية المنتجات حسب البحث وحالة المخزون
+  // منطق تصفية المنتجات حسب البحث، حالة المخزون، والتصنيف
   const filteredProducts = products.filter((p) => {
+    // 1. بحث بالاسم أو الـ SKU أو اسم التصنيف
     const matchesSearch =
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (p.sku && p.sku.toLowerCase().includes(searchTerm.toLowerCase()));
+      (p.sku && p.sku.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.categoryName &&
+        p.categoryName.toLowerCase().includes(searchTerm.toLowerCase()));
 
+    // 2. فلتر التصنيف
+    const matchesCategory =
+      selectedCategory === "ALL" || p.categoryId === selectedCategory;
+
+    // 3. فلتر حالة المخزون
     let matchesStock = true;
     if (stockFilter === "OUT_OF_STOCK") {
       matchesStock = p.quantityInStock === 0;
     } else if (stockFilter === "LOW_STOCK") {
-      matchesStock = p.quantityInStock > 0 && p.quantityInStock <= p.minQuantityAlert;
+      matchesStock =
+        p.quantityInStock > 0 && p.quantityInStock <= p.minQuantityAlert;
     } else if (stockFilter === "IN_STOCK") {
       matchesStock = p.quantityInStock > p.minQuantityAlert;
     }
 
-    return matchesSearch && matchesStock;
+    return matchesSearch && matchesCategory && matchesStock;
   });
 
   const totalProducts = products.length;
@@ -150,7 +173,7 @@ export const ManagerProductList: React.FC = () => {
         </div>
         <div className="flex">
           <button
-            onClick={fetchProducts}
+            onClick={fetchData}
             className="p-2.5 bg-brand-card border border-slate-200 rounded-lg text-brand-subtext hover:text-brand-primary transition-colors ml-5"
             title="تحديث البيانات"
           >
@@ -174,9 +197,12 @@ export const ManagerProductList: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div 
-          onClick={() => setStockFilter("ALL")}
-          className={`bg-brand-card p-5 rounded-xl border shadow-sm flex items-center gap-4 cursor-pointer transition-all ${stockFilter === "ALL" ? "border-brand-primary ring-1 ring-brand-primary" : "border-slate-200 hover:border-slate-300"}`}
+        <div
+          onClick={() => {
+            setStockFilter("ALL");
+            setSelectedCategory("ALL");
+          }}
+          className={`bg-brand-card p-5 rounded-xl border shadow-sm flex items-center gap-4 cursor-pointer transition-all ${stockFilter === "ALL" && selectedCategory === "ALL" ? "border-brand-primary ring-1 ring-brand-primary" : "border-slate-200 hover:border-slate-300"}`}
         >
           <div className="p-3 bg-brand-primary/10 rounded-lg text-brand-primary">
             <IoCubeOutline size={24} />
@@ -205,7 +231,7 @@ export const ManagerProductList: React.FC = () => {
           </div>
         </div>
 
-        <div 
+        <div
           onClick={() => setStockFilter("LOW_STOCK")}
           className={`bg-brand-card p-5 rounded-xl border shadow-sm flex items-center gap-4 cursor-pointer transition-all ${stockFilter === "LOW_STOCK" ? "border-status-warning ring-1 ring-status-warning" : "border-slate-200 hover:border-slate-300"}`}
         >
@@ -222,7 +248,7 @@ export const ManagerProductList: React.FC = () => {
           </div>
         </div>
 
-        <div 
+        <div
           onClick={() => setStockFilter("OUT_OF_STOCK")}
           className={`bg-brand-card p-5 rounded-xl border shadow-sm flex items-center gap-4 cursor-pointer transition-all ${stockFilter === "OUT_OF_STOCK" ? "border-status-danger ring-1 ring-status-danger" : "border-slate-200 hover:border-slate-300"}`}
         >
@@ -242,31 +268,53 @@ export const ManagerProductList: React.FC = () => {
 
       {/* Table Container */}
       <div className="bg-brand-card rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        {/* Header Bar: Search + Filter */}
+        {/* Header Bar: Search + Category Filter + Stock Filter */}
         <div className="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 max-w-md">
             <IoSearchOutline className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-subtext text-lg" />
             <input
               type="text"
-              placeholder="البحث باسم المنتج أو الـ SKU..."
+              placeholder="البحث باسم المنتج، SKU أو التصنيف..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pr-10 pl-4 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text placeholder:text-brand-subtext focus:outline-none focus:border-brand-primary"
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <IoFunnelOutline className="text-brand-subtext text-lg" />
-            <select
-              value={stockFilter}
-              onChange={(e) => setStockFilter(e.target.value as StockFilterType)}
-              className="px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text font-medium focus:outline-none focus:border-brand-primary cursor-pointer"
-            >
-              <option value="ALL">جميع الحالات</option>
-              <option value="IN_STOCK">متوفر فقط</option>
-              <option value="LOW_STOCK">مخزون منخفض</option>
-              <option value="OUT_OF_STOCK">نفد المخزون</option>
-            </select>
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* فلتر التصنيفات */}
+            <div className="flex items-center gap-2">
+              <IoFolderOutline className="text-brand-subtext text-lg" />
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text font-medium focus:outline-none focus:border-brand-primary cursor-pointer"
+              >
+                <option value="ALL">جميع التصنيفات</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* فلتر حالة المخزون */}
+            <div className="flex items-center gap-2">
+              <IoFunnelOutline className="text-brand-subtext text-lg" />
+              <select
+                value={stockFilter}
+                onChange={(e) =>
+                  setStockFilter(e.target.value as StockFilterType)
+                }
+                className="px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text font-medium focus:outline-none focus:border-brand-primary cursor-pointer"
+              >
+                <option value="ALL">جميع الحالات</option>
+                <option value="IN_STOCK">متوفر فقط</option>
+                <option value="LOW_STOCK">مخزون منخفض</option>
+                <option value="OUT_OF_STOCK">نفد المخزون</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -275,6 +323,7 @@ export const ManagerProductList: React.FC = () => {
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-brand-subtext text-xs uppercase font-semibold">
                 <th className="p-4">اسم المنتج</th>
+                <th className="p-4">التصنيف</th>
                 <th className="p-4">رمز SKU</th>
                 <th className="p-4">حالة المخزون</th>
                 <th className="p-4">سعر التكلفة</th>
@@ -291,7 +340,7 @@ export const ManagerProductList: React.FC = () => {
                   const profitMargin =
                     product.costPrice > 0
                       ? ((profit / product.costPrice) * 100).toFixed(1)
-                      : "0";
+                      : "0.0";
 
                   return (
                     <tr
@@ -300,6 +349,12 @@ export const ManagerProductList: React.FC = () => {
                     >
                       <td className="p-4 font-semibold text-brand-text">
                         {product.name}
+                      </td>
+                      {/* عرض اسم التصنيف */}
+                      <td className="p-4 text-xs font-medium">
+                        <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-md border border-slate-200">
+                          {product.categoryName || "غير محدد"}
+                        </span>
                       </td>
                       <td className="p-4 font-mono text-xs text-brand-subtext">
                         {product.sku || "N/A"}
@@ -384,7 +439,7 @@ export const ManagerProductList: React.FC = () => {
               ) : (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={9}
                     className="text-center p-8 text-brand-subtext"
                   >
                     لا توجد منتجات متطابقة.
@@ -398,7 +453,7 @@ export const ManagerProductList: React.FC = () => {
           <CreateProductModal
             isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
-            onSuccess={fetchProducts}
+            onSuccess={fetchData}
           />
           <AddStockModal
             isOpen={isAddStockModalOpen}
@@ -407,7 +462,7 @@ export const ManagerProductList: React.FC = () => {
               setIsAddStockModalOpen(false);
               setSelectedProductForStock(null);
             }}
-            onSuccess={fetchProducts}
+            onSuccess={fetchData}
           />
         </div>
       </div>

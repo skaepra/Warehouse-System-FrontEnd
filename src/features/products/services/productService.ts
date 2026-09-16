@@ -5,6 +5,8 @@ export interface Product {
   id: string;
   name: string;
   sku?: string;
+  categoryId: string;
+  categoryName?: string;
   quantityInStock: number;
   costPrice: number;
   sellingPrice: number;
@@ -15,6 +17,7 @@ export interface Product {
 export interface CreateProductDto {
   name: string;
   sku?: string;
+  categoryId: string;
   initialQuantity: number;
   unitCostPrice: number;
   sellingPrice: number;
@@ -27,10 +30,10 @@ export interface AddStockDto {
 }
 
 export const productService = {
-  // جلب كافة المنتجات [HttpGet("api/products")]
   getAllProducts: async (): Promise<Product[]> => {
     const response = await api.get<Product[]>('/api/products');
-    return response.data;
+    // إرجاع المنتجات المفعلة فقط
+    return response.data.filter((product) => product.isActive);
   },
 
   createProduct: async (dto: CreateProductDto) => {

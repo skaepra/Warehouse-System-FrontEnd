@@ -23,16 +23,14 @@ export const SalesOrdersList: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
 
   // الطلب المحدد للعرض التفصيلي (Modal)
-  const [selectedOrder, setSelectedOrder] = useState<OrderResponseDto | null>(
-    null
-  );
+  const [selectedOrder, setSelectedOrder] = useState<OrderResponseDto | null>(null);
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await orderService.getMyOrders();
-      setOrders(data);
+      setOrders(data || []);
     } catch (err: any) {
       setError(
         err.response?.data?.message || "حدث خطأ أثناء جلب قائمة الطلبات."
@@ -46,19 +44,19 @@ export const SalesOrdersList: React.FC = () => {
     fetchOrders();
   }, []);
 
-  // دالة حساب مجموع الطلب إذا لم يكن محسوباً من Backend
-  const calculateTotal = (order: OrderResponseDto) => {
-    if (order.totalAmount !== undefined && order.totalAmount !== null) {
+  // دالة حساب مجموع الطلب
+  const calculateTotal = (order: OrderResponseDto): number => {
+    if (order.totalAmount !== undefined && order.totalAmount !== null && order.totalAmount > 0) {
       return order.totalAmount;
     }
-    const orderItemsList = order.orderItems || order.orderItems || [];
-    return orderItemsList.reduce(
-      (sum, item) => sum + item.quantity * item.unitSellingPrice,
+    const itemList = order.items || [];
+    return itemList.reduce(
+      (sum, item) => sum + (item.quantity || 0) * (item.unitSellingPrice || 0),
       0
     );
   };
 
-  // شارة الحالة (Badge) - تعتمد على string
+  // شارة الحالة (Badge)
   const renderStatusBadge = (status: string) => {
     switch (status) {
       case "Pending":
@@ -95,12 +93,16 @@ export const SalesOrdersList: React.FC = () => {
 
   // تصفية الطلبات
   const filteredOrders = orders.filter((order) => {
-    const matchesSearch =
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const shop = order.shopName?.toLowerCase() || "";
+    const orderId = order.id?.toLowerCase() || "";
+    const search = searchTerm.toLowerCase();
+
+    const matchesSearch = shop.includes(search) || orderId.includes(search);
 
     const matchesStatus =
-      selectedStatus === "ALL" || order.status === selectedStatus;
+      selectedStatus === "ALL" ||
+      order.status === selectedStatus ||
+      (selectedStatus === "Approved" && order.status === "Prepared");
 
     return matchesSearch && matchesStatus;
   });
@@ -118,7 +120,6 @@ export const SalesOrdersList: React.FC = () => {
       setLoading(true);
       await orderService.cancelOrder(orderId);
 
-      // تحديث الحالة محلياً كـ string
       setOrders((prevOrders) =>
         prevOrders.map((o) =>
           o.id === orderId ? { ...o, status: "Cancelled" } : o
@@ -126,7 +127,7 @@ export const SalesOrdersList: React.FC = () => {
       );
 
       if (selectedOrder?.id === orderId) {
-        setSelectedOrder(null);
+        setSelectedOrder((prev) => (prev ? { ...prev, status: "Cancelled" } : null));
       }
 
       alert("تم إلغاء الطلب بنجاح.");
@@ -157,7 +158,7 @@ export const SalesOrdersList: React.FC = () => {
             طلباتي السابقة
           </h1>
           <p className="text-brand-subtext text-sm">
-            متابعة حالة الطلبات المُدخلة وقائمته تفاصيلها.
+            متابعة حالة الطلبات المُدخلة وقائمة تفاصيلها.
           </p>
         </div>
         <button
@@ -226,7 +227,7 @@ export const SalesOrdersList: React.FC = () => {
           <IoSearchOutline className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-subtext" />
           <input
             type="text"
-            placeholder="بحث باسم الزبون أو رقم الطلب..."
+            placeholder="بحث باسم المحل أو رقم الطلب..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pr-9 pl-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text focus:outline-none focus:border-brand-primary"
@@ -257,7 +258,7 @@ export const SalesOrdersList: React.FC = () => {
           <button
             onClick={() => setSelectedStatus("Approved")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
-              selectedStatus === "Approved" || selectedStatus === "Prepared"
+              selectedStatus === "Approved"
                 ? "bg-emerald-600 text-white"
                 : "bg-brand-bg text-brand-subtext hover:bg-slate-200"
             }`}
@@ -274,7 +275,7 @@ export const SalesOrdersList: React.FC = () => {
             <thead className="bg-slate-50 border-b border-slate-200 text-brand-subtext font-semibold text-xs">
               <tr>
                 <th className="p-4">رقم الطلب</th>
-                <th className="p-4">اسم الزبون</th>
+                <th className="p-4">اسم المحل</th>
                 <th className="p-4">تاريخ الطلب</th>
                 <th className="p-4">الحالة</th>
                 <th className="p-4">الإجمالي</th>
@@ -289,24 +290,25 @@ export const SalesOrdersList: React.FC = () => {
                     className="hover:bg-slate-50/50 transition-colors"
                   >
                     <td className="p-4 font-mono text-xs text-brand-subtext">
-                      #{order.id.substring(0, 8)}...
+                      #{order.id ? `${order.id.substring(0, 8)}...` : "---"}
                     </td>
-                    <td className="p-4 font-semibold">{order.customerName}</td>
+                    <td className="p-4 font-semibold">{order.shopName || "غير محدد"}</td>
                     <td className="p-4 text-xs text-brand-subtext">
-                      {new Date(order.createdAt).toLocaleDateString("ar-EG", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {order.createdAt
+                        ? new Date(order.createdAt).toLocaleDateString("ar-EG", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "---"}
                     </td>
                     <td className="p-4">{renderStatusBadge(order.status)}</td>
                     <td className="p-4 font-bold text-brand-primary">
                       ${calculateTotal(order).toFixed(2)}
                     </td>
                     <td className="p-4 text-center flex items-center justify-center gap-1">
-                      {/* زر عرض التفاصيل */}
                       <button
                         onClick={() => setSelectedOrder(order)}
                         className="p-2 text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-colors"
@@ -315,7 +317,6 @@ export const SalesOrdersList: React.FC = () => {
                         <IoEyeOutline size={18} />
                       </button>
 
-                      {/* يظهر زر الإلغاء فقط إذا كانت حالة الطلب Pending */}
                       {order.status === "Pending" && (
                         <button
                           onClick={() => handleCancelOrder(order.id)}
@@ -366,9 +367,9 @@ export const SalesOrdersList: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3 rounded-xl">
               <div>
-                <span className="text-brand-subtext block">اسم الزبون:</span>
+                <span className="text-brand-subtext block">اسم المحل:</span>
                 <span className="font-semibold text-brand-text">
-                  {selectedOrder.customerName}
+                  {selectedOrder.shopName}
                 </span>
               </div>
               <div>
@@ -385,27 +386,25 @@ export const SalesOrdersList: React.FC = () => {
                 المنتجات المطلوبة:
               </h4>
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {(selectedOrder.orderItems || selectedOrder.orderItems || []).map(
-                  (item, idx) => (
-                    <div
-                      key={idx}
-                      className="flex justify-between items-center p-2.5 bg-brand-bg rounded-lg border border-slate-100 text-xs"
-                    >
-                      <div>
-                        <p className="font-semibold text-brand-text">
-                          {item.productName ||
-                            `منتج رقم (${item.productId.substring(0, 6)})`}
-                        </p>
-                        <p className="text-brand-subtext">
-                          {item.quantity} × ${item.unitSellingPrice.toFixed(2)}
-                        </p>
-                      </div>
-                      <span className="font-bold text-brand-text">
-                        ${(item.quantity * item.unitSellingPrice).toFixed(2)}
-                      </span>
+                {(selectedOrder.items || []).map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center p-2.5 bg-brand-bg rounded-lg border border-slate-100 text-xs"
+                  >
+                    <div>
+                      <p className="font-semibold text-brand-text">
+                        {item.productName ||
+                          `منتج رقم (${item.productId ? item.productId.substring(0, 6) : "---"})`}
+                      </p>
+                      <p className="text-brand-subtext">
+                        {item.quantity} × ${(item.unitSellingPrice || 0).toFixed(2)}
+                      </p>
                     </div>
-                  )
-                )}
+                    <span className="font-bold text-brand-text">
+                      ${(item.totalItemPrice || (item.quantity * item.unitSellingPrice) || 0).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
 

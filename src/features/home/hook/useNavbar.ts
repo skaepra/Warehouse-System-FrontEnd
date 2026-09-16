@@ -15,9 +15,10 @@ export const navItems: NavItem[] = [
   { name: "Inventory", link: "/inventory", allowedRoles: ["Manager"] },
   { name: "Employee", link: "/employeeList", allowedRoles: ["Manager"] }, 
   { name: "Product", link: "/product", allowedRoles: ["Manager"] }, 
+  { name: "Category", link: "/category", allowedRoles: ["Manager"] }, 
   { name: "Invoice", link: "/invoice", allowedRoles: ["Manager"] }, 
 
-  { name: "Order", link: "/order" ,allowedRoles: ["Storekeeper"]}, 
+  { name: "Order", link: "/storekeeperOrders" ,allowedRoles: ["Storekeeper"]}, 
 ];
 
 export function useNavbar() {
