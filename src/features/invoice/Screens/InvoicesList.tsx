@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  InvoiceResponseDto,
-  invoiceService,
-} from "../services/invoiceService";
+import React from "react";
+import { useInvoices } from "../hooks/useInvoices"; // مسار الـ Hook حسب مشروعك
 import {
   IoSearchOutline,
   IoRefreshOutline,
@@ -14,71 +11,20 @@ import {
 } from "react-icons/io5";
 
 export const InvoicesList: React.FC = () => {
-  const [invoices, setInvoices] = useState<InvoiceResponseDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // التصفية والبحث
-  const [searchTerm, setSearchTerm] = useState<string>("");
-
-  // الفاتورة المحددة للعرض التفصيلي (Modal)
-  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceResponseDto | null>(null);
-
-  // جلب قائمة الفواتير الرئيسية
-  const fetchInvoices = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await invoiceService.getAllInvoices();
-      setInvoices(data || []);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message || "حدث خطأ أثناء جلب قائمة الفواتير."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchInvoices();
-  }, []);
-
-  // جلب تفاصيل الفاتورة عند النغط على "عرض التفاصيل"
-  const handleViewDetails = async (invoiceId: string) => {
-    try {
-      setDetailsLoading(true);
-      const details = await invoiceService.getInvoiceDetails(invoiceId);
-      setSelectedInvoice(details);
-    } catch (err: any) {
-      alert(
-        err.response?.data?.message || "حدث خطأ أثناء جلب تفاصيل الفاتورة."
-      );
-    } finally {
-      setDetailsLoading(false);
-    }
-  };
-
-  // تصفية الفواتير بناءً على البحث (باسم العميل، رقم الفاتورة، أو رقم الطلب)
-  const filteredInvoices = invoices.filter((inv) => {
-    const customer = inv.customerName?.toLowerCase() || "";
-    const invoiceId = inv.invoiceId?.toLowerCase() || "";
-    const orderId = inv.orderId?.toLowerCase() || "";
-    const search = searchTerm.toLowerCase();
-
-    return (
-      customer.includes(search) ||
-      invoiceId.includes(search) ||
-      orderId.includes(search)
-    );
-  });
-
-  // المجموع الكلي لكافة الفواتير المعروضة
-  const totalInvoicesAmount = invoices.reduce(
-    (sum, inv) => sum + (inv.totalAmount || 0),
-    0
-  );
+  const {
+    invoices,
+    filteredInvoices,
+    loading,
+    detailsLoading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    selectedInvoice,
+    setSelectedInvoice,
+    fetchInvoices,
+    handleViewDetails,
+    totalInvoicesAmount,
+  } = useInvoices();
 
   if (loading) {
     return (
@@ -254,7 +200,7 @@ export const InvoicesList: React.FC = () => {
         </div>
       </div>
 
-      {/* مودال تفاصيل الفاتورة (Invoice Details Modal) */}
+      {/* مودال تفاصيل الفاتورة */}
       {selectedInvoice && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-brand-card rounded-2xl border border-slate-200 shadow-xl w-full max-w-lg p-6 space-y-5 animate-in fade-in zoom-in-95">
@@ -275,7 +221,6 @@ export const InvoicesList: React.FC = () => {
               </button>
             </div>
 
-            {/* بيانات ملخص الفاتورة */}
             <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
               <div>
                 <span className="text-brand-subtext block">اسم العميل:</span>
@@ -305,7 +250,6 @@ export const InvoicesList: React.FC = () => {
               </div>
             </div>
 
-            {/* العناصر والمنتجات المكونة للفاتورة */}
             <div>
               <h4 className="text-xs font-bold text-brand-subtext mb-2">
                 عناصر الفاتورة:
@@ -338,7 +282,6 @@ export const InvoicesList: React.FC = () => {
               </div>
             </div>
 
-            {/* المجموع الكلي والأزرار */}
             <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
               <span className="text-sm font-semibold text-brand-subtext">
                 المجموع الكلي:

@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { CreateProductDto, productService } from "../services/productService";
-import { CategoryDto, categoryService } from "../../category/services/categoryService";
+import React from "react";
+import { CategoryDto } from "../../category/services/categoryService";
 import { IoCloseOutline } from "react-icons/io5";
+import { useCreateProduct } from "../hooks/useCreateProduct";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  categories?: CategoryDto[]; // تمرير خياري لتصنيفات مأخوذة من المكون الأب
+  categories?: CategoryDto[];
 }
 
 export const CreateProductModal: React.FC<Props> = ({
@@ -16,74 +16,21 @@ export const CreateProductModal: React.FC<Props> = ({
   onSuccess,
   categories: initialCategories,
 }) => {
-  const [formData, setFormData] = useState<CreateProductDto>({
-    name: "",
-    sku: "",
-    categoryId: "",
-    initialQuantity: 0,
-    unitCostPrice: 0,
-    sellingPrice: 0,
-    minQuantityAlert: 10,
+  const {
+    formData,
+    categories,
+    loading,
+    error,
+    handleChange,
+    handleSubmit,
+  } = useCreateProduct({
+    isOpen,
+    onClose,
+    onSuccess,
+    categories: initialCategories,
   });
 
-  const [categories, setCategories] = useState<CategoryDto[]>(initialCategories || []);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // جلب التصنيفات إذا لم تتم تمريرها عبر Props
-  useEffect(() => {
-    if (isOpen && !initialCategories?.length) {
-      categoryService
-        .getAllCategories()
-        .then((data) => setCategories(data))
-        .catch(() => setError("فشل جلب قائمة التصنيفات."));
-    }
-  }, [isOpen, initialCategories]);
-
   if (!isOpen) return null;
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "number" ? parseFloat(value) || 0 : value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name.trim()) {
-      setError("يرجى إدخال اسم المنتج.");
-      return;
-    }
-    if (!formData.categoryId) {
-      setError("يرجى اختيار التصنيف.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-      await productService.createProduct(formData);
-      onSuccess();
-      onClose();
-      setFormData({
-        name: "",
-        sku: "",
-        categoryId: "",
-        initialQuantity: 0,
-        unitCostPrice: 0,
-        sellingPrice: 0,
-        minQuantityAlert: 10,
-      });
-    } catch (err: any) {
-      setError(err.response?.data?.message || "حدث خطأ أثناء إضافة المنتج.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div

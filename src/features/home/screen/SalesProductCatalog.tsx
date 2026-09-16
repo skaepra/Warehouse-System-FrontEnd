@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-// استيراد الـ Actions من ملف cartSlice
+import React from "react";
 import {
   IoSearchOutline,
   IoCartOutline,
@@ -11,100 +9,36 @@ import {
   IoTrashOutline,
   IoArrowForwardOutline,
 } from "react-icons/io5";
-import { RootState } from "../../../store/store";
-import {
-  addToCart,
-  decreaseQuantity,
-  increaseQuantity,
-  removeFromCart,
-} from "../../cart/store/cartSlice";
 import { CreateOrderModal } from "../../order/components/CreateOrderModal";
-import {
-  Product,
-  productService,
-} from "../../products/services/productService";
-
-export interface ProductDto {
-  id: string;
-  name: string;
-  categoryName?: string;
-  unitSellingPrice: number;
-  availableStock: number;
-}
+import { useSalesCatalog } from "../hook/useSalesCatalog";
 
 interface SalesProductCatalogProps {
   onProceedToOrder?: () => void;
 }
 
 export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
-  const dispatch = useDispatch();
-
-  // قراءة عناصر السلة مباشرة من Redux Store
-  const cart = useSelector((state: RootState) => state.cart.items);
-
-  const [products, setProducts] = useState<ProductDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // استدعاء الـ API الحقيقي
-      const data: Product[] = await productService.getAllProducts();
-
-      // تحويل البيانات لملائمة الواجهة (Mapping)
-      const mappedProducts: ProductDto[] = data.map((item) => ({
-        id: item.id,
-        name: item.name,
-        categoryName: item.categoryName || "عام",
-        unitSellingPrice: item.sellingPrice,
-        availableStock: item.quantityInStock,
-      }));
-
-      setProducts(mappedProducts);
-    } catch (err: any) {
-      setError("حدث خطأ أثناء جلب قائمة المنتجات المتاحة.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const categories = [
-    "ALL",
-    ...(Array.from(
-      new Set(products.map((p) => p.categoryName).filter(Boolean)),
-    ) as string[]),
-  ];
-
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "ALL" || product.categoryName === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  // حساب إجمالي السلة من بيانات Redux
-  const totalCartAmount = cart.reduce(
-    (sum, item) => sum + item.quantity * item.unitSellingPrice,
-    0,
-  );
-  const totalCartItemsCount = cart.reduce(
-    (sum, item) => sum + item.quantity,
-    0,
-  );
+  const {
+    cart,
+    loading,
+    error,
+    searchTerm,
+    selectedCategory,
+    categories,
+    filteredProducts,
+    isCartOpen,
+    isOrderModalOpen,
+    totalCartAmount,
+    totalCartItemsCount,
+    setSearchTerm,
+    setSelectedCategory,
+    setIsCartOpen,
+    setIsOrderModalOpen,
+    fetchProducts,
+    handleAddToCart,
+    handleIncreaseQuantity,
+    handleDecreaseQuantity,
+    handleRemoveFromCart,
+  } = useSalesCatalog();
 
   if (loading) {
     return (
@@ -113,6 +47,7 @@ export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
       </div>
     );
   }
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-6">
@@ -203,7 +138,11 @@ export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
                     {product.categoryName || "عام"}
                   </span>
                   <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${isOutOfStock ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-emerald-600"}`}
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      isOutOfStock
+                        ? "bg-rose-50 text-rose-600"
+                        : "bg-emerald-50 text-emerald-600"
+                    }`}
                   >
                     {isOutOfStock
                       ? "غير متوفر"
@@ -235,17 +174,7 @@ export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
                   </button>
                 ) : inCartQty === 0 ? (
                   <button
-                    onClick={() =>
-                      dispatch(
-                        addToCart({
-                          productId: product.id,
-                          productName: product.name,
-                          unitSellingPrice: product.unitSellingPrice,
-                          quantity: 1,
-                          availableStock: product.availableStock,
-                        }),
-                      )
-                    }
+                    onClick={() => handleAddToCart(product)}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-white rounded-lg text-xs font-semibold transition-colors"
                   >
                     <IoAddOutline size={16} />
@@ -254,9 +183,7 @@ export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
                 ) : (
                   <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
                     <button
-                      onClick={() =>
-                        dispatch(decreaseQuantity({ productId: product.id }))
-                      }
+                      onClick={() => handleDecreaseQuantity(product.id)}
                       className="p-1 bg-white hover:bg-slate-200 rounded text-brand-text transition-colors"
                     >
                       <IoRemoveOutline size={14} />
@@ -265,9 +192,7 @@ export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
                       {inCartQty}
                     </span>
                     <button
-                      onClick={() =>
-                        dispatch(increaseQuantity({ productId: product.id }))
-                      }
+                      onClick={() => handleIncreaseQuantity(product.id)}
                       disabled={inCartQty >= product.availableStock}
                       className="p-1 bg-white hover:bg-slate-200 rounded text-brand-text transition-colors disabled:opacity-40"
                     >
@@ -355,11 +280,7 @@ export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
                         ${(item.unitSellingPrice * item.quantity).toFixed(2)}
                       </span>
                       <button
-                        onClick={() =>
-                          dispatch(
-                            removeFromCart({ productId: item.productId }),
-                          )
-                        }
+                        onClick={() => handleRemoveFromCart(item.productId)}
                         className="text-rose-500 hover:bg-rose-50 p-1.5 rounded-lg"
                       >
                         <IoTrashOutline size={16} />
@@ -394,12 +315,13 @@ export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
           </div>
         </div>
       )}
+
       <CreateOrderModal
         isOpen={isOrderModalOpen}
         onClose={() => setIsOrderModalOpen(false)}
         onSuccess={() => {
           alert("تم إنشاء الطلب بنجاح!");
-          fetchProducts(); // إعادة جلب المنتجات لتحديث كميات المخزون
+          fetchProducts();
         }}
       />
     </div>

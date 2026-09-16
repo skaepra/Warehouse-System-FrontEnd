@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from "react";
-import {
-  OrderResponseDto,
-  orderService,
-  OrderStatus,
-} from "../services/orderService";
+import React from "react";
+import { OrderStatus } from "../services/orderService";
+import { useStorekeeperOrders } from "../hooks/useStorekeeperOrders"; // استيراد الـ Hook
 import {
   IoSearchOutline,
   IoRefreshOutline,
@@ -16,53 +13,20 @@ import {
 } from "react-icons/io5";
 
 export const StorekeeperOrdersList: React.FC = () => {
-  const [orders, setOrders] = useState<OrderResponseDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-  const [selectedOrder, setSelectedOrder] = useState<OrderResponseDto | null>(null);
-
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await orderService.getAllOrders();
-      setOrders(data || []);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "حدث خطأ أثناء جلب الطلبات.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const handleStatusChange = async (orderId: string, newStatus: string) => {
-    if (!window.confirm(`هل أنت تأكد من تغيير حالة الطلب إلى '${newStatus}'؟`)) return;
-
-    try {
-      setUpdatingId(orderId);
-      await orderService.updateOrderStatus(orderId, newStatus);
-
-      // تحديث الحالة محلياً في الواجهة
-      setOrders((prev) =>
-        prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-      );
-
-      if (selectedOrder?.id === orderId) {
-        setSelectedOrder((prev) => (prev ? { ...prev, status: newStatus } : null));
-      }
-    } catch (err: any) {
-      alert(err.response?.data?.message || "حدث خطأ أثناء تغيير حالة الطلب.");
-    } finally {
-      setUpdatingId(null);
-    }
-  };
+  const {
+    filteredOrders,
+    loading,
+    updatingId,
+    error,
+    searchTerm,
+    setSearchTerm,
+    selectedStatus,
+    setSelectedStatus,
+    selectedOrder,
+    setSelectedOrder,
+    fetchOrders,
+    handleStatusChange,
+  } = useStorekeeperOrders();
 
   const renderStatusBadge = (status: string) => {
     switch (status) {
@@ -99,17 +63,6 @@ export const StorekeeperOrdersList: React.FC = () => {
         );
     }
   };
-
-  const filteredOrders = orders.filter((order) => {
-    const shop = order.shopName?.toLowerCase() || "";
-    const id = order.id?.toLowerCase() || "";
-    const search = searchTerm.toLowerCase();
-
-    const matchesSearch = shop.includes(search) || id.includes(search);
-    const matchesStatus = selectedStatus === "ALL" || order.status === selectedStatus;
-
-    return matchesSearch && matchesStatus;
-  });
 
   if (loading) {
     return (
@@ -209,8 +162,8 @@ export const StorekeeperOrdersList: React.FC = () => {
                         : "---"}
                     </td>
                     <td className="p-4">{renderStatusBadge(order.status)}</td>
-                    
-                    {/* أزرار الإجراءات الخاصة بأمين المستودع */}
+
+                    {/* أزرار الإجراءات */}
                     <td className="p-4 text-center">
                       {updatingId === order.id ? (
                         <span className="text-xs text-brand-subtext animate-pulse">جاري التحديث...</span>
@@ -271,7 +224,7 @@ export const StorekeeperOrdersList: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal تفاصيل الطلب للمراجعة قبل التغيير */}
+      {/* Modal تفاصيل الطلب */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-brand-card rounded-2xl border border-slate-200 shadow-xl w-full max-w-lg p-6 space-y-5 animate-in fade-in zoom-in-95">

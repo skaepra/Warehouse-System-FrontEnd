@@ -1,62 +1,23 @@
-import React, { useState } from "react";
-import { AddStockDto, Product, productService } from "../services/productService";
+import React from "react";
+import { Product } from "../services/productService";
 import { IoCloseOutline, IoCubeOutline } from "react-icons/io5";
+import { useAddStock } from "../hooks/useAddStock";
 
 interface Props {
   isOpen: boolean;
   product: Product | null;
   onClose: () => void;
-  onSuccess: () => void; // لإعادة تحديث بيانات الجدول بالكميات والتكاليف الجديدة
+  onSuccess: () => void;
 }
 
 export const AddStockModal: React.FC<Props> = ({ isOpen, product, onClose, onSuccess }) => {
-  const [formData, setFormData] = useState<AddStockDto>({
-    quantity: 1,
-    unitCostPrice: product ? product.costPrice : 0,
+  const { formData, loading, error, handleChange, handleSubmit } = useAddStock({
+    product,
+    onClose,
+    onSuccess,
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // تحديث سعر التكلفة الافتراضي عند اختيار المنتج
-  React.useEffect(() => {
-    if (product) {
-      setFormData({
-        quantity: 1,
-        unitCostPrice: product.costPrice,
-      });
-    }
-  }, [product]);
-
   if (!isOpen || !product) return null;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: parseFloat(value) || 0,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.quantity <= 0) {
-      setError("يرجى إدخال كمية أكبر من الصفر.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-      await productService.addStock(product.id, formData);
-      onSuccess(); // تحديث القائمة الرئيسية
-      onClose();   // إغلاق النافذة
-    } catch (err: any) {
-      setError(err.response?.data?.message || "حدث خطأ أثناء إضافة المخزون.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 dir-rtl" dir="rtl">
@@ -134,8 +95,6 @@ export const AddStockModal: React.FC<Props> = ({ isOpen, product, onClose, onSuc
             >
               {loading ? "جاري الإضافة..." : "حفظ الشحنة"}
             </button>
-
-            
           </div>
         </form>
       </div>

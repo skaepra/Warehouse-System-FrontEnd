@@ -44,7 +44,7 @@ export function useLogin() {
       } else if (roles.includes("Sales")) {
         navigate("/productPay", { replace: true });
       } else if (roles.includes("Storekeeper")) {
-        navigate("/inventory", { replace: true }); // غير المسار حسب صفحة المخزن
+        navigate("/storekeeperOrders", { replace: true }); 
       } else {
         navigate("/login", { replace: true });
       }

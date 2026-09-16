@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  OrderResponseDto,
-  orderService,
-} from "../services/orderService";
+import React from "react";
+import { useSalesOrders } from "../hooks/useSalesOrders";
 import {
   IoSearchOutline,
   IoRefreshOutline,
@@ -14,49 +11,22 @@ import {
 } from "react-icons/io5";
 
 export const SalesOrdersList: React.FC = () => {
-  const [orders, setOrders] = useState<OrderResponseDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    filteredOrders,
+    loading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    selectedStatus,
+    setSelectedStatus,
+    selectedOrder,
+    setSelectedOrder,
+    fetchOrders,
+    calculateTotal,
+    handleCancelOrder,
+    stats,
+  } = useSalesOrders();
 
-  // التصفية والبحث
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-
-  // الطلب المحدد للعرض التفصيلي (Modal)
-  const [selectedOrder, setSelectedOrder] = useState<OrderResponseDto | null>(null);
-
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await orderService.getMyOrders();
-      setOrders(data || []);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message || "حدث خطأ أثناء جلب قائمة الطلبات."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  // دالة حساب مجموع الطلب
-  const calculateTotal = (order: OrderResponseDto): number => {
-    if (order.totalAmount !== undefined && order.totalAmount !== null && order.totalAmount > 0) {
-      return order.totalAmount;
-    }
-    const itemList = order.items || [];
-    return itemList.reduce(
-      (sum, item) => sum + (item.quantity || 0) * (item.unitSellingPrice || 0),
-      0
-    );
-  };
-
-  // شارة الحالة (Badge)
   const renderStatusBadge = (status: string) => {
     switch (status) {
       case "Pending":
@@ -88,53 +58,6 @@ export const SalesOrdersList: React.FC = () => {
             {status || "غير محدد"}
           </span>
         );
-    }
-  };
-
-  // تصفية الطلبات
-  const filteredOrders = orders.filter((order) => {
-    const shop = order.shopName?.toLowerCase() || "";
-    const orderId = order.id?.toLowerCase() || "";
-    const search = searchTerm.toLowerCase();
-
-    const matchesSearch = shop.includes(search) || orderId.includes(search);
-
-    const matchesStatus =
-      selectedStatus === "ALL" ||
-      order.status === selectedStatus ||
-      (selectedStatus === "Approved" && order.status === "Prepared");
-
-    return matchesSearch && matchesStatus;
-  });
-
-  // الإحصائيات السريعة
-  const pendingCount = orders.filter((o) => o.status === "Pending").length;
-  const preparedCount = orders.filter(
-    (o) => o.status === "Approved" || o.status === "Prepared"
-  ).length;
-
-  const handleCancelOrder = async (orderId: string) => {
-    if (!window.confirm("هل أنت تأكد من رغبتك في إلغاء هذا الطلب؟")) return;
-
-    try {
-      setLoading(true);
-      await orderService.cancelOrder(orderId);
-
-      setOrders((prevOrders) =>
-        prevOrders.map((o) =>
-          o.id === orderId ? { ...o, status: "Cancelled" } : o
-        )
-      );
-
-      if (selectedOrder?.id === orderId) {
-        setSelectedOrder((prev) => (prev ? { ...prev, status: "Cancelled" } : null));
-      }
-
-      alert("تم إلغاء الطلب بنجاح.");
-    } catch (err: any) {
-      alert(err.response?.data?.message || "حدث خطأ أثناء إلغاء الطلب.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -178,7 +101,7 @@ export const SalesOrdersList: React.FC = () => {
               إجمالي الطلبات
             </span>
             <span className="text-2xl font-extrabold text-brand-text">
-              {orders.length}
+              {stats.totalCount}
             </span>
           </div>
           <div className="p-3 bg-brand-primary/10 text-brand-primary rounded-xl">
@@ -192,7 +115,7 @@ export const SalesOrdersList: React.FC = () => {
               طلبات قيد الانتظار
             </span>
             <span className="text-2xl font-extrabold text-amber-600">
-              {pendingCount}
+              {stats.pendingCount}
             </span>
           </div>
           <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
@@ -206,7 +129,7 @@ export const SalesOrdersList: React.FC = () => {
               الطلبات المقبولة
             </span>
             <span className="text-2xl font-extrabold text-emerald-600">
-              {preparedCount}
+              {stats.preparedCount}
             </span>
           </div>
           <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
@@ -344,7 +267,7 @@ export const SalesOrdersList: React.FC = () => {
         </div>
       </div>
 
-      {/* مودال التفاصيل (Order Details Modal) */}
+      {/* مودال التفاصيل */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-brand-card rounded-2xl border border-slate-200 shadow-xl w-full max-w-lg p-6 space-y-5 animate-in fade-in zoom-in-95">

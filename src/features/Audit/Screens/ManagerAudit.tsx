@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   IoShieldCheckmarkOutline,
   IoCheckmarkCircleOutline,
@@ -12,116 +12,27 @@ import {
   IoTrendingDownOutline,
   IoTrendingUpOutline,
 } from "react-icons/io5";
-import { auditService, AuditDto } from "../services/AuditApi";
+import { useManagerAudit } from "../hooks/useManagerAudit";
 
 export const ManagerAudit: React.FC = () => {
-  const [audits, setAudits] = useState<AuditDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // الفلترة والبحث
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-
-  // معالجة النافذة المنبثقة (Modal) والتفاصيل
-  const [selectedAudit, setSelectedAudit] = useState<AuditDto | null>(null);
-  const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
-  const [actionLoading, setActionLoading] = useState<boolean>(false);
-  const [actionError, setActionError] = useState<string | null>(null);
-
-  // جلب البيانات
-  const fetchAudits = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await auditService.getAllAudits(selectedStatus);
-      setAudits(data);
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.detail || err.message || "فشل تحميل طلبات الجرد.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAudits();
-  }, [selectedStatus]);
-
-  // فتح التفاصيل لعنصر محدد عبر GET /api/audit/{id}
-  const handleOpenDetails = async (id: string) => {
-    try {
-      setLoadingDetails(true);
-      setActionError(null);
-      const data = await auditService.getAuditById(id);
-      setSelectedAudit(data);
-    } catch (err: any) {
-      alert(err?.response?.data?.detail || "تعذر جلب تفاصيل هذا الطلب.");
-    } finally {
-      setLoadingDetails(false);
-    }
-  };
-
-  // موافقة على الطلب PATCH /api/audit/{id}/approve
-  const handleApprove = async (id: string) => {
-    try {
-      setActionLoading(true);
-      setActionError(null);
-      await auditService.approveAudit(id);
-
-      // تحديث الحالة محلياً وإغلاق النافذة
-      setAudits((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status: "1" } : item)),
-      );
-      setSelectedAudit(null);
-    } catch (err: any) {
-      setActionError(
-        err?.response?.data?.detail || "فشلت عملية الموافقة على الطلب.",
-      );
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // رفض الطلب PATCH /api/audit/{id}/reject
-  const handleReject = async (id: string) => {
-    try {
-      setActionLoading(true);
-      setActionError(null);
-      await auditService.rejectAudit(id);
-
-      // تحديث الحالة محلياً وإغلاق النافذة
-      setAudits((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status: "2" } : item)),
-      );
-      setSelectedAudit(null);
-    } catch (err: any) {
-      setActionError(err?.response?.data?.detail || "فشلت عملية رفض الطلب.");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // تصفية النتائج
-  const filteredAudits = audits.filter((audit) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      audit.productId.toLowerCase().includes(term) ||
-      (audit.productName && audit.productName.toLowerCase().includes(term))
-    );
-  });
-
-  // حساب الإحصائيات (KPIs)
-  const pendingCount = audits.filter(
-    (a) => a.status === "0" || a.status === "Pending",
-  ).length;
-  const approvedCount = audits.filter(
-    (a) => a.status === "1" || a.status === "Approved",
-  ).length;
-  const rejectedCount = audits.filter(
-    (a) => a.status === "2" || a.status === "Rejected",
-  ).length;
+  const {
+    audits,
+    loading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    selectedStatus,
+    setSelectedStatus,
+    selectedAudit,
+    setSelectedAudit,
+    actionLoading,
+    actionError,
+    fetchAudits,
+    handleOpenDetails,
+    handleApprove,
+    handleReject,
+    stats,
+  } = useManagerAudit();
 
   const renderBadge = (status: string) => {
     switch (status) {
@@ -192,7 +103,7 @@ export const ManagerAudit: React.FC = () => {
               طلبات معلقة
             </p>
             <p className="text-2xl font-extrabold text-amber-600">
-              {pendingCount}
+              {stats.pendingCount}
             </p>
           </div>
           <div className="p-3 rounded-xl bg-amber-50 text-amber-600">
@@ -206,7 +117,7 @@ export const ManagerAudit: React.FC = () => {
               طلبات معتمدة
             </p>
             <p className="text-2xl font-extrabold text-emerald-600">
-              {approvedCount}
+              {stats.approvedCount}
             </p>
           </div>
           <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
@@ -220,7 +131,7 @@ export const ManagerAudit: React.FC = () => {
               طلبات مرفوضة
             </p>
             <p className="text-2xl font-extrabold text-rose-600">
-              {rejectedCount}
+              {stats.rejectedCount}
             </p>
           </div>
           <div className="p-3 rounded-xl bg-rose-50 text-rose-600">
@@ -288,7 +199,7 @@ export const ManagerAudit: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredAudits.length === 0 ? (
+                {audits.length === 0 ? (
                   <tr>
                     <td
                       colSpan={7}
@@ -298,7 +209,7 @@ export const ManagerAudit: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredAudits.map((item) => {
+                  audits.map((item) => {
                     const isPending =
                       item.status === "0" || item.status === "Pending";
                     return (

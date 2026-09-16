@@ -60,11 +60,8 @@ export default function Layout(): React.JSX.Element {
 
           {/* مسارات أمين المخزن */}
           <Route element={<ProtectedRoute allowedRoles={["Storekeeper"]} />}>
-            <Route
-              path="/storekeeperOrders"
-              element={<StorekeeperOrdersList />}
-            />
-            <Route path="/auditManagement" element={<StorekeeperAudit />} />
+            <Route path="/storekeeperOrders" element={<StorekeeperOrdersList />} />
+            <Route path="/StorekeeperAudit" element={<StorekeeperAudit />} />
           </Route>
 
           {/* مسار تسجيل الدخول - محمي للضيوف فقط */}
