@@ -165,7 +165,7 @@ https://localhost:7156
 ### 1. تحميل المشروع
 
 ```bash
-git clone [<repository-url>](https://github.com/skaepra/Warehouse-System-FrontEnd.git)
+git clone https://github.com/skaepra/Warehouse-System-FrontEnd.git
 ```
 
 ثم الدخول إلى مجلد المشروع:
