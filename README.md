@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📦 ENOUGH — Warehouse Management System
+  # 📦 INVENZA — Warehouse Management System
 
 ### Frontend Application
 
@@ -8,7 +8,7 @@
 
 <br />
 
-<img src="./public/logo.png" alt="ENOUGH Logo" width="120" />
+<img src="./public/logo.png" alt="INVENZA Logo" width="120" />
 
 <br />
 
@@ -290,7 +290,7 @@ React • TypeScript • React Native • ASP.NET
 
 <div align="center">
 
-### 📦 ENOUGH
+### 📦 INVENZA
 
 Warehouse Management System
 
