@@ -9,22 +9,22 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { name: "Product", link: "/productPay" ,allowedRoles: ["Sales"]}, 
-  { name: "Order", link: "/salesOrders" ,allowedRoles: ["Sales"]}, 
+  { name: "المنتجات", link: "/productPay" ,allowedRoles: ["Sales"]}, 
+  { name: "الطلبات", link: "/salesOrders" ,allowedRoles: ["Sales"]}, 
   
-  { name: "Inventory", link: "/inventory", allowedRoles: ["Manager"] },
-  { name: "Employee", link: "/employeeList", allowedRoles: ["Manager"] }, 
-  { name: "Product", link: "/product", allowedRoles: ["Manager"] }, 
-  { name: "Invoice", link: "/invoice", allowedRoles: ["Manager"] }, 
+  { name: "الموظفين", link: "/employeeList", allowedRoles: ["Manager"] }, 
+  { name: "المنتجات", link: "/product", allowedRoles: ["Manager"] }, 
+  { name: "التصنيفات", link: "/category", allowedRoles: ["Manager"] }, 
+  { name: "عمليات الجرد", link: "/managerAudit", allowedRoles: ["Manager"] },
+  { name: "الفواتير", link: "/invoice", allowedRoles: ["Manager"] }, 
 
-  { name: "Order", link: "/order" ,allowedRoles: ["Storekeeper"]}, 
+  { name: "الطلبات", link: "/storekeeperOrders" ,allowedRoles: ["Storekeeper"]}, 
+  { name: "جرد المنتجات", link: "/StorekeeperAudit" ,allowedRoles: ["Storekeeper"]},
 ];
 
 export function useNavbar() {
   const [isVisible, setIsVisible] = useState<boolean>(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
-  const [selectedAddress, setSelectedAddress] = useState<string>("");
 
   const { mode, toggleMode } = useThemeMode() as {
     mode: string;
@@ -38,14 +38,6 @@ export function useNavbar() {
     setIsMobileMenuOpen((prev) => !prev);
   };
 
-  const handleConfirmLocation = (locationData: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  }) => {
-    setSelectedAddress(locationData.address);
-    setIsMapOpen(false);
-  };
 
   useEffect(() => {
     let ticking = false;
@@ -76,12 +68,8 @@ export function useNavbar() {
     isVisible,
     isMobileMenuOpen,
     setIsMobileMenuOpen,
-    isMapOpen,
-    setIsMapOpen,
-    selectedAddress,
     mode,
     toggleMode,
     toggleMobileMenu,
-    handleConfirmLocation,
   };
 }

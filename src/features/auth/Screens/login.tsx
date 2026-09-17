@@ -44,6 +44,7 @@ export default function LoginScreen() {
             placeholder="Your Email"
             error={errors?.Email}
             icon={<IoMailOutline size={20} />}
+            
           />
 
           {/* كلمة السر */}
@@ -79,7 +80,7 @@ const styles = {
     "fixed inset-0 h-screen w-full flex justify-center items-center bg-[url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1920&auto=format&fit=crop')] bg-center bg-cover bg-no-repeat relative before:absolute before:inset-0 before:bg-brand-sidebar/80",
 
   // الكارت الزجاجي الداكن
-  card: "relative z-10 space-y-4 border border-slate-700/60 p-6 w-[360px] backdrop-blur-md bg-brand-sidebar/90 rounded-2xl shadow-2xl text-white",
+  card: "relative z-10 space-y-4 border border-slate-700/60 p-6 sm:w-[360px] backdrop-blur-md bg-brand-sidebar/90 rounded-2xl shadow-2xl text-white w-[300px]",
 
   // زر العودة
   backLink:
