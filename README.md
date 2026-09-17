@@ -1,166 +1,127 @@
-#  React Online Store
+# ENOUGH — Warehouse Management System (Frontend)
 
-A modern and responsive e-commerce web application built with **React**, **TypeScript**, **Vite**, and **Tailwind CSS**.
-The project follows **Feature-based Architecture** and demonstrates modern frontend development practices, including state management, form validation, animations, maps integration, and REST API communication.
-
----
-
-##  Features
-
-* User Authentication
-* Product Categories & Filtering
-* Product Search
-* Product Details
-* Shopping Cart
-* Wishlist
-* Checkout Page
-* Interactive Map for Location Selection
-* Responsive UI for Mobile, Tablet, and Desktop
-* Smooth Animations with Framer Motion
-* Mock REST API using JSON Server
+واجهة ويب لنظام إدارة المستودع **ENOUGH**. التطبيق مبني بـ **React** و **TypeScript** و **Vite** و **Tailwind CSS**، ويتبع **Feature-based Architecture**، ويتصل بـ REST API مع مصادقة **JWT** وتجديد تلقائي للـ refresh token.
 
 ---
 
-##  Tech Stack
+## المميزات
 
-### Frontend
-
-* React
-* TypeScript
-* Vite
-* Tailwind CSS
-
-### State Management
-
-* Redux
-
-### Form Validation
-
-* Zod
-
-### Routing
-
-* React Router
-
-### API Integration
-
-* Axios
-* JSON Server (Mock Backend)
-
-### Maps
-
-* MapLibre GL
-
-### Animations
-
-* Framer Motion
-
-### Architecture
-
-* Feature-based Architecture
+- تسجيل دخول بـ JWT مع تجديد التوكن تلقائياً عند `401`
+- صلاحيات حسب الدور: **Manager** و **Sales** و **Storekeeper**
+- شريط تنقل يظهر الروابط المناسبة لكل دور، مع تسجيل خروج
+- إدارة الموظفين (قائمة + إنشاء موظف)
+- إدارة المنتجات: إنشاء منتج، تعديل سعر البيع، إضافة مخزون
+- إدارة التصنيفات (إنشاء / تعديل / حذف)
+- كتالوج مبيعات مع سلة محلية وإنشاء طلب
+- معالجة طلبات أمين المخزن وتحديث الحالة
+- جرد المخزون للمدير ولأمين المخزن (إنشاء / اعتماد / رفض)
+- عرض الفواتير
+- وضع داكن / فاتح
+- صفحة 404 للمسارات غير المصرح بها أو غير الموجودة
 
 ---
 
-##  Installation
+## الأدوار والمسارات
 
-Clone the repository
+| الدور | الصفحة بعد الدخول | الشاشات |
+| --- | --- | --- |
+| Manager | `/employeeList` | الموظفين، المنتجات، التصنيفات، الفواتير، جرد المدير |
+| Sales | `/productPay` | كتالوج المنتجات، طلبات المبيعات |
+| Storekeeper | `/storekeeperOrders` | الطلبات الواردة، جرد أمين المخزن |
 
-```bash
-https://github.com/skaepra/React-Online-Store-Only-FrontEnd.git
+الضيف يُوجَّه إلى `/login`. المسارات المحمية معرفة في `src/Layout.tsx` عبر `ProtectedRoute` و `GuestRoute` و `RoleBasedRedirect`.
+
+### جدول المسارات
+
+| المسار | الدور | الشاشة |
+| --- | --- | --- |
+| `/login` | ضيف فقط | تسجيل الدخول |
+| `/employeeList` | Manager | قائمة الموظفين |
+| `/createEmployee` | Manager | إنشاء موظف |
+| `/product` | Manager | إدارة المنتجات |
+| `/category` | Manager | إدارة التصنيفات |
+| `/invoice` | Manager | الفواتير |
+| `/managerAudit` | Manager | عمليات الجرد |
+| `/productPay` | Sales | كتالوج البيع وإنشاء طلب |
+| `/salesOrders` | Sales | طلبات المبيعات |
+| `/storekeeperOrders` | Storekeeper | طلبات المخزن |
+| `/StorekeeperAudit` | Storekeeper | جرد المنتجات |
+
+---
+
+## التقنيات
+
+- React 18, TypeScript, Vite, Tailwind CSS
+- React Router
+- Axios (`src/shared/api/axiosInstance.ts`)
+- Zod للنماذج (تسجيل الدخول وإنشاء موظف)
+- JWT (`jwt-decode`) لاستخراج الأدوار من التوكن
+- Redux Toolkit + redux-persist (سلة المبيعات)
+- React Icons
+
+عنوان الباك إند الافتراضي (مثبت في Axios):
+
+```text
+https://localhost:7156
 ```
 
-Navigate to the project
+---
 
-```bash
-cd React-Online-Store-Only-FrontEnd
-```
+## التشغيل
 
-Install dependencies
+المتطلبات: Node.js، وباك إند النظام شغّال على المنفذ أعلاه (شهادة HTTPS محلية مقبولة في المتصفح).
 
 ```bash
 npm install
-```
-
-Start the mock backend
-
-```bash
-npm run server
-```
-
-Run the development server
-
-```bash
 npm run dev
 ```
 
----
+يفتح التطبيق عادة على `http://localhost:5173`. سكربت `dev` يستخدم `--base=/` حتى تعمل المسارات محلياً.
 
-##  Screenshots
+أوامر أخرى:
 
-### Home
+```bash
+npm run build      # بناء للإنتاج
+npm run preview    # معاينة البناء
+npm run lint       # ESLint
+```
 
-![Home](screenshots/home.png)
-
-### Shopping List
-
-![Shopping](screenshots/shopping.png)
-
-### Product Details
-
-![Product Details](screenshots/product-details.png)
-
-### Shopping Cart
-
-![Cart](screenshots/cart.png)
-
-### Checkout
-
-![Checkout](screenshots/checkout.png)
-
-### Location Selection
-
-![Map](screenshots/map.png)
-
-### Order
-
-![Order](screenshots/order.png)
-
-### Sign Up
-
-![Sign Up](screenshots/sign-up.png)
+بعد تسجيل الدخول تُحفظ `token` و `refreshToken` في `localStorage`. عند انتهاء الجلسة أو فشل التجديد يُعاد التوجيه إلى `/login`.
 
 ---
 
+## هيكل المشروع
 
-##  Location Services
-
-The checkout page integrates **MapLibre GL** to allow users to select their delivery location directly on the map.
-
----
-
-## 📱 Responsive Design
-
-The application is fully responsive and optimized for:
-
-* Desktop
-* Tablet
-* Mobile
-
----
-
-##  Future Improvements
-
-* Real Backend Integration
-* Online Payment Gateway
-* User Order History
-* Product Reviews
-* Admin Dashboard
+```text
+src/
+  features/
+    auth/          تسجيل الدخول، إنشاء موظف، JWT logout
+    employee.ts/   قائمة الموظفين
+    products/      منتجات المدير (إنشاء، سعر، مخزون)
+    category/      التصنيفات
+    home/          النافبار + كتالوج المبيعات
+    order/         طلبات المبيعات وأمين المخزن
+    invoice/       الفواتير
+    Audit/         جرد المدير وأمين المخزن
+    cart/          شريحة السلة (Redux)
+    dark-mode/     الثيم
+    error/         404
+  Route/           ProtectedRoute, GuestRoute, RoleBasedRedirect
+  shared/          Axios، حقول النماذج، helpers للأدوار
+  store/           Redux store
+  Layout.tsx       تعريف المسارات والنافبار
+```
 
 ---
 
-##  Author
+## واجهات الـ API المستخدمة
 
-**Ahmad Abo Al Shaar**
-
-GitHub:
-https://github.com/skaepra
+| المجال | أمثلة المسارات |
+| --- | --- |
+| Auth | `POST /api/login`, `POST /api/refresh-token`, `POST /api/logout`, `POST /api/createEmployee` |
+| Users | `GET /api/users` |
+| Products | `GET /api/products`, `POST /api/createProduct`, `PATCH /api/updateProduct/:id/price`, `POST /api/product/:id/add-stock` |
+| Categories | `GET /api/Categories`, `POST /api/createCategory`, `PUT /api/updateCategory/:id`, `DELETE /api/deleteCategory/:id` |
+| Orders | `GET /api/orders`, `GET /api/myOrders`, `POST /api/createOrder`, `PUT /api/cancelOrder/:id`, `PATCH /api/order/:id/status` |
+| Invoices | `GET /api/Invoices`, `GET /api/Invoices/:id/details` |
+| Audits | `GET /api/audits`, `POST /api/createAudit`, `GET /api/audit/:id`, `PATCH .../approve`, `PATCH .../reject`, `DELETE /api/deleteAudit/:id` |
