@@ -233,7 +233,7 @@ export const SalesProductCatalog: React.FC<SalesProductCatalogProps> = () => {
             </button>
             <button
               onClick={() => setIsOrderModalOpen(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-brand-primary text-white rounded-xl text-xs font-bold"
+              className="sm:flex items-center gap-2 px-5 py-2.5 bg-brand-primary text-white rounded-xl text-xs font-bold hidden"
             >
               متابعة إنشاء الطلب
               <IoArrowForwardOutline size={16} />

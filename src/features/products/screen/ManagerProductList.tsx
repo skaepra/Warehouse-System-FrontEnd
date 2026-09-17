@@ -76,26 +76,26 @@ export const ManagerProductList: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-brand-bg min-h-screen text-brand-text dir-rtl mt-12" dir="rtl">
+    <div className="p-6 bg-brand-bg min-h-screen text-brand-text mt-12" dir="rtl">
       {/* Header */}
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-brand-text mb-1">إدارة المنتجات والمخزون</h1>
           <p className="text-brand-subtext text-sm">
             نظرة شاملة للمدير على التكاليف، أسعار البيع، والكميات المتاحة.
           </p>
         </div>
-        <div className="flex">
+        <div className="flex items-center gap-3">
           <button
             onClick={fetchData}
-            className="p-2.5 bg-brand-card border border-slate-200 rounded-lg text-brand-subtext hover:text-brand-primary transition-colors ml-5"
+            className="p-2.5 bg-brand-card border border-slate-200 rounded-lg text-brand-subtext hover:text-brand-primary transition-colors"
             title="تحديث البيانات"
           >
             <IoRefreshOutline size={20} />
           </button>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-brand-primary text-white font-semibold text-sm rounded-lg hover:bg-brand-primary/90 transition-colors shadow-sm"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-primary text-white font-semibold text-sm rounded-lg hover:bg-brand-primary/90 transition-colors shadow-sm"
           >
             <IoAddOutline size={20} />
             إضافة منتج جديد
@@ -110,7 +110,7 @@ export const ManagerProductList: React.FC = () => {
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div
           onClick={() => {
             setStockFilter("ALL");
@@ -178,53 +178,153 @@ export const ManagerProductList: React.FC = () => {
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="bg-brand-card rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
-          <div className="relative flex-1 max-w-md">
-            <IoSearchOutline className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-subtext text-lg" />
-            <input
-              type="text"
-              placeholder="البحث باسم المنتج، SKU أو التصنيف..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pr-10 pl-4 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text placeholder:text-brand-subtext focus:outline-none focus:border-brand-primary"
-            />
-          </div>
-
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <IoFolderOutline className="text-brand-subtext text-lg" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text font-medium focus:outline-none focus:border-brand-primary cursor-pointer"
-              >
-                <option value="ALL">جميع التصنيفات</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <IoFunnelOutline className="text-brand-subtext text-lg" />
-              <select
-                value={stockFilter}
-                onChange={(e) => setStockFilter(e.target.value as StockFilterType)}
-                className="px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text font-medium focus:outline-none focus:border-brand-primary cursor-pointer"
-              >
-                <option value="ALL">جميع الحالات</option>
-                <option value="IN_STOCK">متوفر فقط</option>
-                <option value="LOW_STOCK">مخزون منخفض</option>
-                <option value="OUT_OF_STOCK">نفد المخزون</option>
-              </select>
-            </div>
-          </div>
+      {/* البحث والفلترة */}
+      <div className="bg-brand-card p-4 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full md:w-80">
+          <IoSearchOutline className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-subtext text-lg" />
+          <input
+            type="text"
+            placeholder="البحث باسم المنتج، SKU أو التصنيف..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pr-10 pl-4 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text placeholder:text-brand-subtext focus:outline-none focus:border-brand-primary"
+          />
         </div>
 
+        <div className="flex items-center gap-3 w-full md:w-auto flex-wrap sm:flex-nowrap">
+          <div className="flex items-center gap-2 flex-1 sm:flex-none">
+            <IoFolderOutline className="text-brand-subtext text-lg" />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full sm:w-auto px-1 sm:px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text font-medium focus:outline-none focus:border-brand-primary cursor-pointer"
+            >
+              <option value="ALL">كل التصنيفات</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2 flex-1 sm:flex-none">
+            <IoFunnelOutline className="text-brand-subtext text-lg" />
+            <select
+              value={stockFilter}
+              onChange={(e) => setStockFilter(e.target.value as StockFilterType)}
+              className="w-full sm:w-auto px-1 sm:px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text font-medium focus:outline-none focus:border-brand-primary cursor-pointer"
+            >
+              <option value="ALL">كل الحالات</option>
+              <option value="IN_STOCK">متوفر فقط</option>
+              <option value="LOW_STOCK">مخزون منخفض</option>
+              <option value="OUT_OF_STOCK">نفد المخزون</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* ----------------- عرض المنتجات للشاشات الصغيرة (بطاقات) ----------------- */}
+      <div className="grid grid-cols-1 gap-4 md:hidden mb-6">
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => {
+            const profit = product.sellingPrice - product.costPrice;
+            const profitMargin =
+              product.costPrice > 0
+                ? ((profit / product.costPrice) * 100).toFixed(1)
+                : "0.0";
+
+            return (
+              <div key={product.id} className="bg-brand-card p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className={`inline-block w-2.5 h-2.5 rounded-full ${
+                          product.isActive ? "bg-status-success" : "bg-slate-300"
+                        }`}
+                        title={product.isActive ? "نشط" : "غير نشط"}
+                      />
+                      <h3 className="font-bold text-brand-text text-base">{product.name}</h3>
+                    </div>
+                    <span className="text-xs font-mono text-brand-subtext">
+                      SKU: {product.sku || "N/A"}
+                    </span>
+                  </div>
+                  <div>{getStockBadge(product.quantityInStock, product.minQuantityAlert)}</div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs border-t border-slate-100 pt-3">
+                  <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-md border border-slate-200">
+                    {product.categoryName || "غير محدد"}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-brand-subtext">هامش الربح:</span>
+                    <span className={`font-semibold ${profit >= 0 ? "text-status-success" : "text-status-danger"}`}>
+                      ${profit.toFixed(2)} ({profitMargin}%)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 bg-brand-bg p-3 rounded-lg border border-slate-100 text-xs my-1">
+                  <div>
+                    <span className="text-brand-subtext block mb-0.5">سعر التكلفة</span>
+                    <span className="font-semibold text-brand-text">${product.costPrice.toFixed(2)}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-subtext block mb-0.5">سعر البيع</span>
+                    {editingId === product.id ? (
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          value={newPrice}
+                          onChange={(e) => setNewPrice(parseFloat(e.target.value))}
+                          className="w-16 px-1.5 py-0.5 border border-brand-primary rounded bg-white text-brand-text text-xs focus:outline-none"
+                        />
+                        <button
+                          disabled={updating}
+                          onClick={() => handleSavePrice(product.id)}
+                          className="p-1 text-status-success hover:bg-status-successBg rounded"
+                        >
+                          <IoCheckmarkOutline size={16} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-brand-primary">${product.sellingPrice.toFixed(2)}</span>
+                        <button
+                          onClick={() => {
+                            setEditingId(product.id);
+                            setNewPrice(product.sellingPrice);
+                          }}
+                          className="text-brand-subtext hover:text-brand-primary transition-colors"
+                        >
+                          <IoPencilOutline size={14} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => handleOpenAddStock(product)}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 text-xs font-semibold bg-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-white rounded-lg transition-colors mt-1"
+                >
+                  <IoAddCircleOutline size={16} />
+                  تزويد الشحنة والمخزون
+                </button>
+              </div>
+            );
+          })
+        ) : (
+          <div className="p-8 text-center text-brand-subtext bg-brand-card rounded-xl border border-slate-200">
+            لا توجد منتجات متطابقة.
+          </div>
+        )}
+      </div>
+
+      {/* ----------------- عرض المنتجات للشاشات الكبيرة (جدول) ----------------- */}
+      <div className="hidden md:block bg-brand-card rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-6">
         <div className="overflow-x-auto">
           <table className="w-full text-right border-collapse">
             <thead>
@@ -342,20 +442,21 @@ export const ManagerProductList: React.FC = () => {
               )}
             </tbody>
           </table>
-
-          <CreateProductModal
-            isOpen={isCreateModalOpen}
-            onClose={() => setIsCreateModalOpen(false)}
-            onSuccess={fetchData}
-          />
-          <AddStockModal
-            isOpen={isAddStockModalOpen}
-            product={selectedProductForStock}
-            onClose={handleCloseAddStock}
-            onSuccess={fetchData}
-          />
         </div>
       </div>
+
+      {/* Modals */}
+      <CreateProductModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={fetchData}
+      />
+      <AddStockModal
+        isOpen={isAddStockModalOpen}
+        product={selectedProductForStock}
+        onClose={handleCloseAddStock}
+        onSuccess={fetchData}
+      />
     </div>
   );
 };

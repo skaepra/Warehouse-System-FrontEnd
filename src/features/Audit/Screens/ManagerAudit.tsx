@@ -39,27 +39,27 @@ export const ManagerAudit: React.FC = () => {
       case "0":
       case "Pending":
         return (
-          <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
             <IoTimeOutline size={14} /> بانتظار المراجعة
           </span>
         );
       case "1":
       case "Approved":
         return (
-          <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
             <IoCheckmarkCircleOutline size={14} /> تمت الموافقة
           </span>
         );
       case "2":
       case "Rejected":
         return (
-          <span className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200">
             <IoCloseCircleOutline size={14} /> مرفوض
           </span>
         );
       default:
         return (
-          <span className="text-xs px-2.5 py-1 bg-slate-100 rounded-full">
+          <span className="inline-flex text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-brand-subtext">
             {status}
           </span>
         );
@@ -178,102 +178,199 @@ export const ManagerAudit: React.FC = () => {
         </div>
       </div>
 
-      {/* Table */}
       {error ? (
         <div className="p-8 text-center bg-brand-card rounded-xl border border-slate-200 text-rose-500 font-semibold">
           {error}
         </div>
       ) : (
-        <div className="bg-brand-card rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-right text-sm">
-              <thead className="bg-brand-bg border-b border-slate-200 text-brand-subtext text-xs font-bold">
-                <tr>
-                  <th className="p-3.5">المنتج</th>
-                  <th className="p-3.5">كمية النظام</th>
-                  <th className="p-3.5">الكمية الفعلية</th>
-                  <th className="p-3.5">الفارق</th>
-                  <th className="p-3.5">الحالة</th>
-                  <th className="p-3.5">تاريخ الإرسال</th>
-                  <th className="p-3.5 text-center">الإجراء</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {audits.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="text-center py-8 text-brand-subtext"
-                    >
-                      لا توجد سجلات جرد مطابقة.
-                    </td>
-                  </tr>
-                ) : (
-                  audits.map((item) => {
-                    const isPending =
-                      item.status === "0" || item.status === "Pending";
-                    return (
-                      <tr
-                        key={item.id}
-                        className="hover:bg-slate-50/50 transition-colors"
-                      >
-                        <td className="p-3.5 font-bold text-brand-text">
+        <>
+          {/* ----------------- عرض السجلات للشاشات الصغيرة (بطاقات) ----------------- */}
+          <div className="grid grid-cols-1 gap-4 md:hidden mb-6">
+            {audits.length === 0 ? (
+              <div className="p-8 text-center text-brand-subtext bg-brand-card rounded-xl border border-slate-200 text-sm">
+                لا توجد سجلات جرد مطابقة.
+              </div>
+            ) : (
+              audits.map((item) => {
+                const isPending =
+                  item.status === "0" || item.status === "Pending";
+                const diffFormatted =
+                  item.difference > 0
+                    ? `+${item.difference}`
+                    : item.difference;
+
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-brand-card p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-3"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-bold text-brand-text text-base">
                           {item.productName || item.productId}
-                          <span className="block text-[10px] font-normal text-brand-subtext">
-                            ID: {item.productId}
-                          </span>
-                        </td>
-                        <td className="p-3.5 font-semibold">
+                        </h3>
+                        <span className="text-[11px] text-brand-subtext font-mono">
+                          ID: {item.productId}
+                        </span>
+                      </div>
+                      <div>{renderBadge(item.status)}</div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 bg-brand-bg p-3 rounded-lg border border-slate-100 text-center text-xs my-1">
+                      <div>
+                        <span className="text-brand-subtext block mb-1">
+                          النظام
+                        </span>
+                        <span className="font-semibold text-brand-text">
                           {item.systemQuantity}
-                        </td>
-                        <td className="p-3.5 font-semibold">
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-brand-subtext block mb-1">
+                          الفعلي
+                        </span>
+                        <span className="font-semibold text-brand-text">
                           {item.physicalQuantity}
-                        </td>
-                        <td className="p-3.5">
-                          <span
-                            className={`font-extrabold text-xs px-2 py-0.5 rounded-md flex items-center gap-1 w-fit ${
-                              item.difference < 0
-                                ? "bg-rose-50 text-rose-600"
-                                : item.difference > 0
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-brand-subtext block mb-1">
+                          الفارق
+                        </span>
+                        <span
+                          className={`font-extrabold px-1.5 py-0.5 rounded inline-flex items-center gap-0.5 ${
+                            item.difference < 0
+                              ? "bg-rose-50 text-rose-600"
+                              : item.difference > 0
+                              ? "bg-emerald-50 text-emerald-600"
+                              : "bg-slate-100 text-brand-subtext"
+                          }`}
+                        >
+                          {item.difference < 0 && <IoTrendingDownOutline />}
+                          {item.difference > 0 && <IoTrendingUpOutline />}
+                          {diffFormatted}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-brand-subtext">
+                      <span>
+                        {new Date(item.submittedAt).toLocaleString("ar-EG", {
+                          dateStyle: "short",
+                          timeStyle: "short",
+                        })}
+                      </span>
+
+                      <button
+                        onClick={() => handleOpenDetails(item.id)}
+                        className={`px-3 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1 transition-colors ${
+                          isPending
+                            ? "bg-brand-primary text-white hover:opacity-90"
+                            : "bg-slate-100 text-brand-text hover:bg-slate-200"
+                        }`}
+                      >
+                        <IoEyeOutline size={15} />
+                        {isPending ? "مراجعة واتخاذ قرار" : "معاينة"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* ----------------- عرض السجلات للشاشات الكبيرة (جدول) ----------------- */}
+          <div className="hidden md:block bg-brand-card rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-right text-sm">
+                <thead className="bg-brand-bg border-b border-slate-200 text-brand-subtext text-xs font-bold">
+                  <tr>
+                    <th className="p-3.5">المنتج</th>
+                    <th className="p-3.5">كمية النظام</th>
+                    <th className="p-3.5">الكمية الفعلية</th>
+                    <th className="p-3.5">الفارق</th>
+                    <th className="p-3.5">الحالة</th>
+                    <th className="p-3.5">تاريخ الإرسال</th>
+                    <th className="p-3.5 text-center">الإجراء</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {audits.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="text-center py-8 text-brand-subtext"
+                      >
+                        لا توجد سجلات جرد مطابقة.
+                      </td>
+                    </tr>
+                  ) : (
+                    audits.map((item) => {
+                      const isPending =
+                        item.status === "0" || item.status === "Pending";
+                      return (
+                        <tr
+                          key={item.id}
+                          className="hover:bg-slate-50/50 transition-colors"
+                        >
+                          <td className="p-3.5 font-bold text-brand-text">
+                            {item.productName || item.productId}
+                            <span className="block text-[10px] font-normal text-brand-subtext">
+                              ID: {item.productId}
+                            </span>
+                          </td>
+                          <td className="p-3.5 font-semibold">
+                            {item.systemQuantity}
+                          </td>
+                          <td className="p-3.5 font-semibold">
+                            {item.physicalQuantity}
+                          </td>
+                          <td className="p-3.5">
+                            <span
+                              className={`font-extrabold text-xs px-2 py-0.5 rounded-md flex items-center gap-1 w-fit ${
+                                item.difference < 0
+                                  ? "bg-rose-50 text-rose-600"
+                                  : item.difference > 0
                                   ? "bg-emerald-50 text-emerald-600"
                                   : "bg-slate-100 text-brand-subtext"
-                            }`}
-                          >
-                            {item.difference < 0 && <IoTrendingDownOutline />}
-                            {item.difference > 0 && <IoTrendingUpOutline />}
-                            {item.difference > 0
-                              ? `+${item.difference}`
-                              : item.difference}
-                          </span>
-                        </td>
-                        <td className="p-3.5">{renderBadge(item.status)}</td>
-                        <td className="p-3.5 text-xs text-brand-subtext">
-                          {new Date(item.submittedAt).toLocaleString("ar-EG", {
-                            dateStyle: "short",
-                            timeStyle: "short",
-                          })}
-                        </td>
-                        <td className="p-3.5 text-center">
-                          <button
-                            onClick={() => handleOpenDetails(item.id)}
-                            className={`px-3 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1 mx-auto transition-colors ${
-                              isPending
-                                ? "bg-brand-primary text-white hover:opacity-90"
-                                : "bg-slate-100 text-brand-text hover:bg-slate-200"
-                            }`}
-                          >
-                            <IoEyeOutline size={15} />
-                            {isPending ? "مراجعة واتخاذ قرار" : "معاينة"}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                              }`}
+                            >
+                              {item.difference < 0 && <IoTrendingDownOutline />}
+                              {item.difference > 0 && <IoTrendingUpOutline />}
+                              {item.difference > 0
+                                ? `+${item.difference}`
+                                : item.difference}
+                            </span>
+                          </td>
+                          <td className="p-3.5">{renderBadge(item.status)}</td>
+                          <td className="p-3.5 text-xs text-brand-subtext">
+                            {new Date(item.submittedAt).toLocaleString("ar-EG", {
+                              dateStyle: "short",
+                              timeStyle: "short",
+                            })}
+                          </td>
+                          <td className="p-3.5 text-center">
+                            <button
+                              onClick={() => handleOpenDetails(item.id)}
+                              className={`px-3 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1 mx-auto transition-colors ${
+                                isPending
+                                  ? "bg-brand-primary text-white hover:opacity-90"
+                                  : "bg-slate-100 text-brand-text hover:bg-slate-200"
+                              }`}
+                            >
+                              <IoEyeOutline size={15} />
+                              {isPending ? "مراجعة واتخاذ قرار" : "معاينة"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Modal تفاصيل الجرد والموافقة / الرفض */}
@@ -328,7 +425,7 @@ export const ManagerAudit: React.FC = () => {
                   </span>
                   <span className="font-semibold text-brand-text">
                     {new Date(selectedAudit.submittedAt).toLocaleString(
-                      "ar-EG",
+                      "ar-EG"
                     )}
                   </span>
                 </div>
