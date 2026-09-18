@@ -4,7 +4,6 @@ import {
   IoReceiptOutline,
   IoPricetagOutline,
   IoRefreshOutline,
-  IoAddOutline,
   IoEyeOutline,
   IoCloseCircleOutline,
 } from "react-icons/io5";
@@ -28,7 +27,7 @@ export const InvoicesList: React.FC = () => {
 
   // تصفية الفواتير بناءً على حالة الفلتر وحالة البحث
   const displayedInvoices = useMemo(() => {
-    return filteredInvoices.filter((inv) => {
+    return filteredInvoices.filter(() => {
       if (statusFilter === "ALL") return true;
       // ملاحظة: يمكنك تعديل الشرط إذا كان الـ API يرجع حالة الفاتورة مستقبلاً
       return true; 
@@ -68,17 +67,10 @@ export const InvoicesList: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={fetchInvoices}
-            className="p-2.5 bg-brand-card border border-slate-200 rounded-lg text-brand-subtext hover:text-brand-primary transition-colors"
-            title="تحديث البيانات"
-          >
-            <IoRefreshOutline size={20} />
-          </button>
-          <button
-            onClick={() => {}}
             className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-primary text-white font-semibold text-sm rounded-lg hover:bg-brand-primary/90 transition-colors shadow-sm"
           >
-            <IoAddOutline size={20} />
-            إنشاء فاتورة جديدة
+            <IoRefreshOutline size={20} />
+            تحديث الفوتير
           </button>
         </div>
       </div>
@@ -268,7 +260,7 @@ export const InvoicesList: React.FC = () => {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-brand-card rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b pb-3 mb-4">
-              <h3 className="font-bold text-lg">تفاصيل الفاتورة #{selectedInvoice.invoiceId}</h3>
+              <h3 className="font-bold text-lg">تفاصيل الفاتورة </h3>
               <button
                 onClick={() => setSelectedInvoice(null)}
                 className="text-brand-subtext hover:text-brand-text"
@@ -285,7 +277,8 @@ export const InvoicesList: React.FC = () => {
               <div className="space-y-3 text-sm">
                 <p><strong>اسم العميل:</strong> {selectedInvoice.customerName}</p>
                 <p><strong>رقم الطلب:</strong> {selectedInvoice.orderId}</p>
-                <p><strong>تاريخ الإصدار:</strong> {selectedInvoice.issuedAt}</p>
+                <p><strong>تاريخ الإصدار:</strong>
+                {selectedInvoice.issuedAt ? new Date(selectedInvoice.issuedAt).toLocaleDateString("ar-EG") : "-"}</p>
                 
                 <h4 className="font-bold mt-4 mb-2 border-t pt-3">العناصر:</h4>
                 <div className="space-y-2">

@@ -1,6 +1,5 @@
 import api from "../../../shared/api/axiosInstance";
 
-
 export interface Product {
   id: string;
   name: string;

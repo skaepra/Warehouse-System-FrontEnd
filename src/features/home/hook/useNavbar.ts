@@ -17,6 +17,8 @@ export const navItems: NavItem[] = [
   { name: "التصنيفات", link: "/category", allowedRoles: ["Manager"] }, 
   { name: "عمليات الجرد", link: "/managerAudit", allowedRoles: ["Manager"] },
   { name: "الفواتير", link: "/invoice", allowedRoles: ["Manager"] }, 
+  { name: "المشتريات", link: "/purchase", allowedRoles: ["Manager"] },
+  { name: "الارباح", link: "/profitAnalytic", allowedRoles: ["Manager"] },
 
   { name: "الطلبات", link: "/storekeeperOrders" ,allowedRoles: ["Storekeeper"]}, 
   { name: "جرد المنتجات", link: "/StorekeeperAudit" ,allowedRoles: ["Storekeeper"]},
