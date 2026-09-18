@@ -21,6 +21,8 @@ import { ProtectedRoute } from "./Route/ProtectedRoute";
 import { StorekeeperAudit } from "./features/Audit/Screens/StorekeeperAudit";
 import { ManagerAudit } from "./features/Audit/Screens/ManagerAudit";
 import { CategoryManagement } from "./features/category/Screens/CategoryManagement";
+import { PurchasesList } from "./features/Purchases/screens/PurchasesList";
+import { ProfitAnalyticsScreen } from "./features/ProfitAnalytics/screens/ProfitAnalyticsScreen";
 
 export default function Layout(): React.JSX.Element {
   const location = useLocation();
@@ -49,6 +51,8 @@ export default function Layout(): React.JSX.Element {
             <Route path="/product" element={<ManagerProductList />} />
             <Route path="/category" element={<CategoryManagement />} />
             <Route path="/invoice" element={<InvoicesList />} />
+            <Route path="/purchase" element={<PurchasesList />} />
+            <Route path="/profitAnalytic" element={<ProfitAnalyticsScreen />} />
             <Route path="/managerAudit" element={<ManagerAudit />} />
           </Route>
 
