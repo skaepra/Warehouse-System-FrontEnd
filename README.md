@@ -4,7 +4,7 @@
 
 ### Frontend Application
 
-**نظام ويب لإدارة المستودعات والمبيعات والمخزون**
+**نظام ويب لإدارة المستودعات والمبيعات والمخزون والتحليلات المالية**
 
 <br />
 
@@ -12,11 +12,11 @@
 
 <br />
 
-![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge\&logo=react\&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge\&logo=typescript\&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge\&logo=vite\&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge\&logo=tailwindcss\&logoColor=white)
-![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-764ABC?style=for-the-badge\&logo=redux\&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss\&logoColor=white)
+![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-764ABC?style=for-the-badge&logo=redux&logoColor=white)
 
 </div>
 
@@ -24,11 +24,11 @@
 
 ## 📋 عن المشروع
 
-**ENOUGH** هو نظام ويب لإدارة المستودعات والمخزون والمبيعات، تم تطوير الواجهة الأمامية باستخدام **React + TypeScript + Vite + Tailwind CSS**.
+**INVENZA** هو نظام ويب متكامل لإدارة المستودعات والمخزون والمبيعات والمشتريات، تم تطوير الواجهة الأمامية باستخدام **React + TypeScript + Vite + Tailwind CSS**.
 
 تم بناء المشروع باستخدام **Feature-based Architecture** لتنظيم الكود وفصل كل Feature عن الأخرى، كما أنه متصل بواجهة خلفية مبنية باستخدام **ASP.NET 8 Web API**.
 
-يدعم النظام عدة أدوار للمستخدمين، حيث تختلف الصفحات والصلاحيات المتاحة حسب دور المستخدم.
+يدعم النظام عدة أدوار للمستخدمين، حيث تختلف الصفحات والصلاحيات المتاحة حسب دور المستخدم، بالإضافة إلى لوحة تحليلات مالية متقدمة لحساب الأرباح وهامش الربح بدقة.
 
 ---
 
@@ -38,6 +38,8 @@
 * 🔄 تجديد الـ **Refresh Token** تلقائياً عند انتهاء الـ Access Token
 * 👥 نظام صلاحيات حسب دور المستخدم
 * 📦 إدارة المنتجات والمخزون
+* 🛍️ إدارة وتتبع المشتريات وتكاليفها 
+* 📊 تحليلات مالية متقدمة وشاملة 
 * 🏷️ إدارة التصنيفات
 * 👨‍💼 إدارة الموظفين
 * 🛒 كتالوج المنتجات وسلة المبيعات
@@ -45,7 +47,7 @@
 * 🚚 معالجة طلبات المستودع وتحديث حالتها
 * 📋 إدارة عمليات جرد المخزون
 * 🧾 عرض الفواتير وتفاصيلها
-* 📱 واجهة متجاوبة مع أحجام الشاشات المختلفة
+* 📱  واجهة متجاوبة ودعم كامل للغة العربية (RTL / Responsive UI)
 * 🚫 صفحة 404 للمسارات غير الموجودة أو غير المسموح بها
 
 ---
@@ -54,11 +56,11 @@
 
 يحتوي النظام على ثلاثة أدوار رئيسية:
 
-| الدور           | الوظائف الرئيسية                                            |
-| --------------- | ----------------------------------------------------------- |
-| **Manager**     | إدارة الموظفين، المنتجات، التصنيفات، الفواتير، وجرد المخزون |
-| **Sales**       | تصفح المنتجات، إنشاء الطلبات، وإدارة طلبات المبيعات         |
-| **Storekeeper** | معالجة طلبات المستودع وإدارة جرد المخزون                    |
+| الدور          | الوظائف الرئيسية                                                                 |
+| -------------- | ------------------------------------------------------------------------------- |
+| **Manager**    | إدارة الموظفين، المنتجات، التصنيفات، المشتريات، الفواتير، التحليلات المالية، وجرد المخزون |
+| **Sales**      | تصفح المنتجات، إنشاء الطلبات، وإدارة طلبات المبيعات                             |
+| **Storekeeper**| معالجة طلبات المستودع وإدارة جرد المخزون                                         |
 
 يتم حماية المسارات حسب الدور باستخدام:
 
@@ -100,8 +102,10 @@
 src/
 ├── features/
 │   ├── auth/
-│   ├── employee.ts/
+│   ├── employee/
 │   ├── products/
+│   ├── Purchases/        
+│   ├── ProfitAnalytics/           
 │   ├── category/
 │   ├── home/
 │   ├── order/
@@ -242,25 +246,6 @@ refreshToken
 ```
 
 ---
-
-## 🗂️ الصفحات الرئيسية
-
-| المسار               | الدور       | الوظيفة                      |
-| -------------------- | ----------- | ---------------------------- |
-| `/login`             | Guest       | تسجيل الدخول                 |
-| `/employeeList`      | Manager     | قائمة الموظفين               |
-| `/createEmployee`    | Manager     | إنشاء موظف                   |
-| `/product`           | Manager     | إدارة المنتجات               |
-| `/category`          | Manager     | إدارة التصنيفات              |
-| `/invoice`           | Manager     | الفواتير                     |
-| `/managerAudit`      | Manager     | جرد المخزون                  |
-| `/productPay`        | Sales       | كتالوج المنتجات وإنشاء الطلب |
-| `/salesOrders`       | Sales       | طلبات المبيعات               |
-| `/storekeeperOrders` | Storekeeper | طلبات المستودع               |
-| `/StorekeeperAudit`  | Storekeeper | جرد المخزون                  |
-
----
-
 ## 📱 Responsive Design
 
 تم تصميم الواجهة لتعمل على أحجام شاشات مختلفة باستخدام **Tailwind CSS** مع مراعاة الـResponsive UI في مختلف صفحات النظام.
