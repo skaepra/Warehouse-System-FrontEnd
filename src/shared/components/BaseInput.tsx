@@ -106,7 +106,7 @@ export default function BaseInput(props: InputProps) {
       </div>
 
       {!!error && (
-        <span className="text-dangerRose text-xs mt-1 ml-[15px]">
+        <span className="text-[#e02f2f] text-xs mt-1 ml-[15px]">
           {error}
         </span>
       )}

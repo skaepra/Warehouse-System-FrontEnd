@@ -23,6 +23,8 @@ import { ManagerAudit } from "./features/Audit/Screens/ManagerAudit";
 import { CategoryManagement } from "./features/category/Screens/CategoryManagement";
 import { PurchasesList } from "./features/Purchases/screens/PurchasesList";
 import { ProfitAnalyticsScreen } from "./features/ProfitAnalytics/screens/ProfitAnalyticsScreen";
+import { SuppliersManagerList } from "./features/Supplier/screen/SuppliersManagerList";
+import AssignSupplierProductScreen from "./features/Supplier/screen/AssignSupplierProductScreen";
 
 export default function Layout(): React.JSX.Element {
   const location = useLocation();
@@ -66,6 +68,13 @@ export default function Layout(): React.JSX.Element {
           <Route element={<ProtectedRoute allowedRoles={["Storekeeper"]} />}>
             <Route path="/storekeeperOrders" element={<StorekeeperOrdersList />} />
             <Route path="/StorekeeperAudit" element={<StorekeeperAudit />} />
+          </Route>
+
+           {/* مسارات مسوؤل المشتريات*/}
+          <Route element={<ProtectedRoute allowedRoles={["SalesRepresentative"]} />}>
+            <Route path="/suppliersManager" element={<SuppliersManagerList />} />
+            <Route path="/refillProduct" element={<ManagerProductList />} />
+            <Route path="/assignSupplierProduct" element={<AssignSupplierProductScreen />} />
           </Route>
 
           {/* مسار تسجيل الدخول - محمي للضيوف فقط */}

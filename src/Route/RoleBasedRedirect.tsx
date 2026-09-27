@@ -14,6 +14,9 @@ export const RoleBasedRedirect: React.FC = () => {
   if (roles.includes("Storekeeper")) {
     return <Navigate to="/storekeeperOrders" replace />;
   }
+    if (roles.includes("SalesRepresentative")) {
+    return <Navigate to="/SuppliersManager" replace />;
+  }
 
   return <Navigate to="/login" replace />;
 };

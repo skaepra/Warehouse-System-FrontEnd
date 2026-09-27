@@ -104,13 +104,16 @@ export default function CreateEmployeeScreen() {
                 Select Employee Role
               </option>
               <option value="Storekeeper" className="bg-brand-sidebar text-white">
-                Storekeeper (أمينات مستودع)
+                Storekeeper 
+              </option>
+               <option value="SalesRepresentative" className="bg-brand-sidebar text-white">
+                SalesRepresentative 
               </option>
               <option value="Sales" className="bg-brand-sidebar text-white">
-                Sales (مبيعات)
+                Sales 
               </option>
               <option value="Manager" className="bg-brand-sidebar text-white">
-                Manager (مدير)
+                Manager 
               </option>
             </select>
           </div>

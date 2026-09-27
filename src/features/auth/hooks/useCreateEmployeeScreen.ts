@@ -5,10 +5,11 @@ import { SignupPayload } from "../types/SignupPayload";
 import { createEmployeeSchema } from "../schemas/CreateEmployeeSchema";
 import { useForm } from "../../../shared/useForm";
 import { initialSignupState } from "../constants/initialSignupState";
+import { useNavigate } from "react-router-dom";
 
 export function useCreateEmployee() {
   const form = useForm(initialSignupState, createEmployeeSchema);
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -41,7 +42,7 @@ export function useCreateEmployee() {
       if (form.reset) {
         form.reset();
       }
-
+      navigate("/")
       return result;
     } catch (error: any) {
       console.error("❌ خطأ أثناء حفظ المستخدم:", error);

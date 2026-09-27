@@ -13,9 +13,6 @@ const initialFormState: CreateProductDto = {
   name: "",
   sku: "",
   categoryId: "",
-  initialQuantity: 0,
-  unitCostPrice: 0,
-  sellingPrice: 0,
   minQuantityAlert: 10,
 };
 
