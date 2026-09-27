@@ -14,7 +14,7 @@ export const createEmployeeSchema = z.object({
     })
     .regex(
       /^[a-zA-Z]+$/,
-      "الاسم يجب أن يحتوي على أحرف إنكليزية فقط بدون مسافات، أرقام أو رموز"
+      "Name must contain only English letters without spaces, numbers, or symbols"
     ),
   Email: z
     .string()
@@ -61,7 +61,7 @@ export const createEmployeeSchema = z.object({
         "Password can contain only uppercase letters, lowercase letters, numbers and !@#$%^&*() symbols",
     }),
 
-  Role: z.enum(["Storekeeper", "Sales", "Manager"], {
+  Role: z.enum(["Storekeeper", "Sales", "Manager","SalesRepresentative"], {
     required_error: "دور الموظف مطلوب",
     invalid_type_error: "يرجى اختيار دور صحيح",
   }),

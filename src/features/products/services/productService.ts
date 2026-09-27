@@ -6,6 +6,7 @@ export interface Product {
   sku?: string;
   categoryId: string;
   categoryName?: string;
+  supplierId: string;
   quantityInStock: number;
   costPrice: number;
   sellingPrice: number;
@@ -17,15 +18,18 @@ export interface CreateProductDto {
   name: string;
   sku?: string;
   categoryId: string;
-  initialQuantity: number;
-  unitCostPrice: number;
-  sellingPrice: number;
   minQuantityAlert: number;
 }
 
 export interface AddStockDto {
   quantity: number;
   unitCostPrice: number;
+  supplierId: string
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
 }
 
 export const productService = {

@@ -5,7 +5,7 @@ import { useThemeMode } from "../../dark-mode/dark";
 export interface NavItem {
   name: string;
   link: string;
-  allowedRoles?: ("Manager" | "Sales" | "Storekeeper")[]; 
+  allowedRoles?: ("Manager" | "Sales" | "Storekeeper" | "SalesRepresentative")[]; 
 }
 
 export const navItems: NavItem[] = [
@@ -19,6 +19,10 @@ export const navItems: NavItem[] = [
   { name: "الفواتير", link: "/invoice", allowedRoles: ["Manager"] }, 
   { name: "المشتريات", link: "/purchase", allowedRoles: ["Manager"] },
   { name: "الارباح", link: "/profitAnalytic", allowedRoles: ["Manager"] },
+
+  { name: "الموردين", link: "/suppliersManager", allowedRoles: ["SalesRepresentative"] },
+  { name: "المنتجات", link: "/refillProduct", allowedRoles: ["SalesRepresentative"] },
+  { name: "منتجات المورد", link: "/assignSupplierProduct", allowedRoles: ["SalesRepresentative"] },
 
   { name: "الطلبات", link: "/storekeeperOrders" ,allowedRoles: ["Storekeeper"]}, 
   { name: "جرد المنتجات", link: "/StorekeeperAudit" ,allowedRoles: ["Storekeeper"]},

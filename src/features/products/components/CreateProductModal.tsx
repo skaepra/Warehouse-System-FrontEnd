@@ -124,50 +124,6 @@ export const CreateProductModal: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-brand-subtext mb-1">
-                الكمية الأولية
-              </label>
-              <input
-                type="number"
-                name="initialQuantity"
-                min="0"
-                value={formData.initialQuantity}
-                onChange={handleChange}
-                className="w-full px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text focus:outline-none focus:border-brand-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-brand-subtext mb-1">
-                سعر التكلفة ($)
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                name="unitCostPrice"
-                min="0"
-                value={formData.unitCostPrice}
-                onChange={handleChange}
-                className="w-full px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text focus:outline-none focus:border-brand-primary"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-brand-subtext mb-1">
-                سعر البيع ($)
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                name="sellingPrice"
-                min="0"
-                value={formData.sellingPrice}
-                onChange={handleChange}
-                className="w-full px-3 py-2 bg-brand-bg border border-slate-200 rounded-lg text-sm text-brand-text focus:outline-none focus:border-brand-primary"
-              />
-            </div>
-          </div>
-
           {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <button
